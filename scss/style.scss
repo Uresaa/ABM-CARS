@@ -1,0 +1,10 @@
+@use "colors";
+@use "fonts";
+
+@use "header";
+@use "hero";
+@use "footer";
+
+body {
+  background-color: colors.$bg-color;
+}

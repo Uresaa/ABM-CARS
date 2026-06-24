@@ -1,0 +1,51 @@
+@use "colors";
+@use "fonts";
+
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 90px;
+
+  background: colors.$bg-color;
+  border-bottom: 1px solid colors.$border-color;
+  z-index: 1000;
+
+  .container {
+    height: 100%;
+  }
+
+  &__wrapper {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+.logo {
+  img {
+    width: 200px;
+    height: 100px;
+  }
+}
+
+.nav {
+  &__list {
+    display: flex;
+    gap: 50px;
+    list-style: none;
+    margin-right: 20px;
+  }
+
+  a {
+    color: colors.$text-color;
+    text-decoration: none;
+    font-family: fonts.$font-heading;
+    font-weight: fonts.$medium;
+    font-size: fonts.$p-medium;
+    transition: 0.3s;
+
+    &:hover {
+      color: colors.$primary-color;
+    }
+  }
+}
