@@ -2,21 +2,22 @@
 @use "fonts";
 
 .whyus {
-  padding: 10px 0;
+  padding: 80px 0;
   background: colors.$bg-color;
   font-family: fonts.$font-body;
 
   &__header {
-    max-width: 700px;
-    margin-bottom: 60px;
+    max-width: 750px;
+    margin-bottom: 50px;
   }
 
   &__subtitle {
     color: colors.$primary-color;
     font-weight: fonts.$semibold;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     font-family: fonts.$font-heading;
+    font-size: 14px;
   }
 
   &__title {
@@ -27,67 +28,86 @@
     font-weight: fonts.$bold;
 
     span {
-      color: colors.$text-color;
-      font-weight: fonts.$regular;
+      color: colors.$primary-color;
     }
   }
 
   &__description {
     color: colors.$text-color;
-    line-height: 1.6;
+    line-height: 1.7;
     font-size: fonts.$p-medium;
   }
 
+  /* GRID */
   &__grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 22px;
   }
 
+  /* CARD */
   &__card {
+    position: relative;
     background: colors.$surface-color;
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 14px;
     border: 1px solid colors.$border-color;
+    transition: all 0.3s ease;
+    overflow: hidden;
+
+    /* number effect */
+    counter-increment: card;
+  }
+
+  &__card::before {
+    content: "0" counter(card);
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 40px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.05);
     transition: 0.3s ease;
-    font-family: fonts.$font-body;
+  }
 
-    &:hover {
-      transform: translateY(-5px);
-      border-color: colors.$primary-color;
-    }
+  &__card:hover {
+    transform: translateY(-8px);
+    border-color: colors.$primary-color;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(
+      135deg,
+      rgba(colors.$primary-color, 0.12),
+      rgba(255, 255, 255, 0.02)
+    );
+  }
 
-    h3 {
-      color: colors.$font-color;
-      margin-bottom: 10px;
-      font-size: fonts.$h4;
-      font-family: fonts.$font-heading;
-      font-weight: fonts.$semibold;
-    }
+  &__card h3 {
+    color: colors.$font-color;
+    margin-bottom: 10px;
+    font-size: fonts.$h4;
+    font-family: fonts.$font-heading;
+    font-weight: fonts.$semibold;
+  }
 
-    p {
-      color: colors.$text-color;
-      font-size: fonts.$p-medium;
-    }
+  &__card p {
+    color: colors.$text-color;
+    line-height: 1.6;
   }
 }
 
+/* responsive */
 @media (max-width: 992px) {
-  .whyus {
-    &__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .whyus__grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 576px) {
-  .whyus {
-    &__grid {
-      grid-template-columns: 1fr;
-    }
+  .whyus__grid {
+    grid-template-columns: 1fr;
+  }
 
-    &__title {
-      font-size: fonts.$h3;
-    }
+  .whyus__title {
+    font-size: fonts.$h3;
   }
 }

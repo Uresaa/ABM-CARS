@@ -34,8 +34,8 @@
               <ul class="nav__list">
                 <li><a href="#home">Si funksionon</a></li>
                 <li><a href="#cars">Kërko Veturë</a></li>
-                <li><a href="#about">Pse Ne</a></li>
-                <li><a href="#services">Pyetje</a></li>
+                <li><a href="#whyus">Pse Ne</a></li>
+                <li><a href="#faq">Pyetje</a></li>
                 <li><a href="#contact">Kontakt</a></li>
               </ul>
             </nav>
@@ -179,7 +179,7 @@
               </div>
 
               <div class="search__group">
-                <label>Tipi i Karrocerisë</label>
+                <label>Tipi</label>
 
                 <select>
                   <option>Të gjitha</option>
@@ -188,14 +188,6 @@
 
               <div class="search__group">
                 <label>Karburanti</label>
-
-                <select>
-                  <option>Të gjitha</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Transmisioni</label>
 
                 <select>
                   <option>Të gjitha</option>
@@ -267,26 +259,26 @@
               </div>
 
               <div class="search__group">
-                <label>Çmimi nga (USD)</label>
+                <label>Çmimi nga</label>
                 <select>
                   <option>Pa limit</option>
-                  <option>$5,000</option>
-                  <option>$10,000</option>
-                  <option>$15,000</option>
-                  <option>$20,000</option>
-                  <option>$30,000</option>
+                  <option>5,000</option>
+                  <option>10,000</option>
+                  <option>15,000</option>
+                  <option>20,000</option>
+                  <option>30,000</option>
                 </select>
               </div>
 
               <div class="search__group">
-                <label>Çmimi deri (USD)</label>
+                <label>Çmimi deri</label>
                 <select>
                   <option>Pa limit</option>
-                  <option>$10,000</option>
-                  <option>$20,000</option>
-                  <option>$30,000</option>
-                  <option>$50,000</option>
-                  <option>$100,000</option>
+                  <option>10,000</option>
+                  <option>20,000</option>
+                  <option>30,000</option>
+                  <option>50,000</option>
+                  <option>100,000</option>
                 </select>
               </div>
             </div>
@@ -299,7 +291,7 @@
         </div>
       </section>
 
-      <section class="whyus" class="about">
+      <section class="whyus" id="whyus">
         <div class="container">
           <div class="whyus__header">
             <span class="whyus__subtitle">PSE NE</span>
@@ -337,7 +329,112 @@
         </div>
       </section>
 
-      <footer></footer>
+      <section class="faq" id="faq">
+        <div class="container">
+          <div class="faq__header">
+            <span class="faq__subtitle">PYETJE TË SHPESHTA</span>
+            <h2 class="faq__title">PYETJE TË ZAKONSHME</h2>
+          </div>
+
+          <div class="faq__list">
+            <div class="faq__item">
+              <button class="faq__question">
+                Në cilat vende transportoni vetura?
+                <span>+</span>
+              </button>
+              <div class="faq__answer">
+                Transportojmë në Shqipëri, Kosovë, Maqedoni të Veriut, vendet e
+                BE-së, Australi, Kanada dhe tregje të tjera. Na kontaktoni për
+                konfirmim të disponibilitetit.
+              </div>
+            </div>
+
+            <div class="faq__item">
+              <button class="faq__question">
+                Mund të kërkoj një veturë specifike jashtë inventarit tuaj?
+                <span>+</span>
+              </button>
+              <div class="faq__answer">
+                Po, ne kërkojmë dhe importojmë vetura sipas kërkesës së
+                klientit.
+              </div>
+            </div>
+
+            <div class="faq__item">
+              <button class="faq__question">
+                Çfarë përfshin çmimi?
+                <span>+</span>
+              </button>
+              <div class="faq__answer">
+                Çmimi përfshin blerjen e veturës, taksën e eksportit korean,
+                transportin detar, sigurimin dhe tarifën tonë të shërbimit.
+                Detyrimet doganore dhe regjistrimi lokal janë shtesë.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="contact-footer" id="contact">
+        <div class="footer-grid">
+          <!-- LEFT INFO -->
+          <div class="footer-info">
+            <span class="footer__subtitle">KONTAKT</span>
+            <h2>MERR OFERTË</h2>
+            <p>
+              Na tregoni çfarë po kërkoni. Do t’ju përgjigjemi brenda një dite
+              pune me disponueshmërinë, çmimin dhe vlerësim doganor.
+            </p>
+
+            <div class="contact-item">
+              <span>📞</span>
+              <div>
+                <p>+383 49 936 333</p>
+                <small>Rinor Meshi</small>
+              </div>
+            </div>
+
+            <a
+              href="https://instagram.com/abmcars_korea"
+              target="_blank"
+              class="contact-item"
+            >
+              <span>📷</span>
+              <div>
+                <p>@abmcars_korea</p>
+                <small>Instagram</small>
+              </div>
+            </a>
+
+            <div class="contact-item">
+              <span>📍</span>
+              <div>
+                <p>Rr.Bajram Gashi, Përball Troftës ISTOG</p>
+                <small>Zyra qendrore</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT MAP -->
+          <div class="footer-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d395.2876283435995!2d20.482856654779972!3d42.78143460672145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2s!4v1783098491869!5m2!1sen!2s"
+              width="600"
+              height="450"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              height="100%"
+              style="border: 0"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            >
+            </iframe>
+          </div>
+        </div>
+      </footer>
     </div>
+    <script src="../js/script.js"></script>
   </body>
 </html>

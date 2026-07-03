@@ -1,0 +1,94 @@
+@use "colors";
+@use "fonts";
+
+.contact-footer {
+  background: colors.$bg-color;
+  padding: 80px 60px;
+  color: colors.$font-color;
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+  }
+  .footer__subtitle {
+    color: colors.$primary-color;
+    font-weight: fonts.$semibold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: fonts.$font-heading;
+    font-size: 14px;
+  }
+
+  .footer-info {
+    h2 {
+      font-family: fonts.$font-heading;
+      font-size: fonts.$h2;
+      font-weight: fonts.$extra-bold;
+      margin-bottom: 20px;
+      color: colors.$font-color;
+    }
+
+    p {
+      font-family: fonts.$font-body;
+      font-size: fonts.$p-medium;
+      color: colors.$text-color;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .contact-item {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding: 14px;
+      background: colors.$surface-color;
+      border: 1px solid colors.$border-color;
+      border-radius: 10px;
+      transition: 0.3s ease;
+
+      &:hover {
+        background: colors.$input-color;
+        transform: translateY(-2px);
+      }
+
+      span {
+        color: colors.$primary-color;
+        font-size: 20px;
+      }
+
+      p {
+        margin: 0;
+        font-family: fonts.$font-body;
+        font-weight: fonts.$semibold;
+        font-size: fonts.$p-medium;
+        color: colors.$font-color;
+      }
+
+      small {
+        font-family: fonts.$font-body;
+        font-size: fonts.$p-small;
+        color: colors.$text-color;
+      }
+    }
+  }
+
+  .footer-map {
+    height: 380px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid colors.$border-color;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .contact-item {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+  }
+}

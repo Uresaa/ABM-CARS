@@ -1,0 +1,81 @@
+.contact-footer {
+  background: #111111;
+  padding: 80px 60px;
+  color: #f0eee9;
+}
+.contact-footer .footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+.contact-footer .footer__subtitle {
+  color: #1e40af;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 14px;
+}
+.contact-footer .footer-info h2 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 54px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #f0eee9;
+}
+.contact-footer .footer-info p {
+  font-family: "Figtree", sans-serif;
+  font-size: 18px;
+  color: #8a94a6;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+.contact-footer .footer-info .contact-item {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+.contact-footer .footer-info .contact-item:hover {
+  background: #202733;
+  transform: translateY(-2px);
+}
+.contact-footer .footer-info .contact-item span {
+  color: #1e40af;
+  font-size: 20px;
+}
+.contact-footer .footer-info .contact-item p {
+  margin: 0;
+  font-family: "Figtree", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #f0eee9;
+}
+.contact-footer .footer-info .contact-item small {
+  font-family: "Figtree", sans-serif;
+  font-size: 16px;
+  color: #8a94a6;
+}
+.contact-footer .footer-map {
+  height: 380px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.contact-footer .footer-map iframe {
+  width: 100%;
+  height: 100%;
+}
+.contact-footer .contact-item {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+
+/*# sourceMappingURL=footer.css.map */

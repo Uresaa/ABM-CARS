@@ -1,18 +1,19 @@
 .whyus {
-  padding: 10px 0;
+  padding: 80px 0;
   background: #111111;
   font-family: "Figtree", sans-serif;
 }
 .whyus__header {
-  max-width: 700px;
-  margin-bottom: 60px;
+  max-width: 750px;
+  margin-bottom: 50px;
 }
 .whyus__subtitle {
   color: #1e40af;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-transform: uppercase;
   font-family: "Barlow Condensed", sans-serif;
+  font-size: 14px;
 }
 .whyus__title {
   font-size: 54px;
@@ -22,30 +23,50 @@
   font-weight: 700;
 }
 .whyus__title span {
-  color: #8a94a6;
-  font-weight: 400;
+  color: #1e40af;
 }
 .whyus__description {
   color: #8a94a6;
-  line-height: 1.6;
+  line-height: 1.7;
   font-size: 18px;
+}
+.whyus {
+  /* GRID */
 }
 .whyus__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 22px;
+}
+.whyus {
+  /* CARD */
 }
 .whyus__card {
+  position: relative;
   background: #1a1a1a;
   padding: 30px;
-  border-radius: 10px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  /* number effect */
+  counter-increment: card;
+}
+.whyus__card::before {
+  content: "0" counter(card);
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 40px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.05);
   transition: 0.3s ease;
-  font-family: "Figtree", sans-serif;
 }
 .whyus__card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
   border-color: #1e40af;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.12), rgba(255, 255, 255, 0.02));
 }
 .whyus__card h3 {
   color: #f0eee9;
@@ -56,9 +77,10 @@
 }
 .whyus__card p {
   color: #8a94a6;
-  font-size: 18px;
+  line-height: 1.6;
 }
 
+/* responsive */
 @media (max-width: 992px) {
   .whyus__grid {
     grid-template-columns: repeat(2, 1fr);
