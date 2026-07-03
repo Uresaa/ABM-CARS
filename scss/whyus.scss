@@ -1,0 +1,93 @@
+@use "colors";
+@use "fonts";
+
+.whyus {
+  padding: 10px 0;
+  background: colors.$bg-color;
+  font-family: fonts.$font-body;
+
+  &__header {
+    max-width: 700px;
+    margin-bottom: 60px;
+  }
+
+  &__subtitle {
+    color: colors.$primary-color;
+    font-weight: fonts.$semibold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: fonts.$font-heading;
+  }
+
+  &__title {
+    font-size: fonts.$h2;
+    color: colors.$font-color;
+    margin: 15px 0;
+    font-family: fonts.$font-heading;
+    font-weight: fonts.$bold;
+
+    span {
+      color: colors.$text-color;
+      font-weight: fonts.$regular;
+    }
+  }
+
+  &__description {
+    color: colors.$text-color;
+    line-height: 1.6;
+    font-size: fonts.$p-medium;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  &__card {
+    background: colors.$surface-color;
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid colors.$border-color;
+    transition: 0.3s ease;
+    font-family: fonts.$font-body;
+
+    &:hover {
+      transform: translateY(-5px);
+      border-color: colors.$primary-color;
+    }
+
+    h3 {
+      color: colors.$font-color;
+      margin-bottom: 10px;
+      font-size: fonts.$h4;
+      font-family: fonts.$font-heading;
+      font-weight: fonts.$semibold;
+    }
+
+    p {
+      color: colors.$text-color;
+      font-size: fonts.$p-medium;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .whyus {
+    &__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .whyus {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__title {
+      font-size: fonts.$h3;
+    }
+  }
+}

@@ -4,6 +4,8 @@
 @use "header";
 @use "hero";
 @use "footer";
+@use "search";
+@use "whyus";
 
 body {
   background-color: colors.$bg-color;
