@@ -38,14 +38,12 @@
     font-size: fonts.$p-medium;
   }
 
-  /* GRID */
   &__grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 22px;
   }
 
-  /* CARD */
   &__card {
     position: relative;
     background: colors.$surface-color;
@@ -55,7 +53,6 @@
     transition: all 0.3s ease;
     overflow: hidden;
 
-    /* number effect */
     counter-increment: card;
   }
 
@@ -95,7 +92,6 @@
   }
 }
 
-/* responsive */
 @media (max-width: 992px) {
   .whyus__grid {
     grid-template-columns: repeat(2, 1fr);
