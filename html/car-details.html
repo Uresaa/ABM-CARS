@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detajet e veturës | ABM CARS KOREA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Figtree:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/car-details.css?v=4" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <a href="./index.html"><img src="../images/logo.png" alt="ABM CARS KOREA" /></a>
+        <a href="./index.html#search">← Kthehu te veturat</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <p id="status" class="message" role="status">Duke ngarkuar detajet...</p>
+
+      <article id="car-details" hidden>
+        <header class="car-heading">
+          <p class="eyebrow">Import direkt nga Korea e Jugut</p>
+          <h1 id="car-title"></h1>
+          <p id="car-grade"></p>
+        </header>
+
+        <div class="car-layout">
+          <section class="gallery" aria-label="Fotografitë e veturës">
+            <div class="gallery__main">
+              <img id="main-image" alt="" />
+              <span id="image-placeholder" hidden>Fotografia nuk është në dispozicion</span>
+              <span class="photo-count" data-field="photos"></span>
+            </div>
+            <div id="thumbnails" class="gallery__thumbnails"></div>
+          </section>
+
+          <aside class="summary-card">
+            <p class="section-label">Përmbledhje</p>
+            <dl class="summary-list">
+              <div><dt>Viti</dt><dd data-field="year"></dd></div>
+              <div><dt>Kilometrazha</dt><dd data-field="mileage"></dd></div>
+              <div><dt>Karburanti</dt><dd data-field="fuel"></dd></div>
+              <div><dt>Transmisioni</dt><dd data-field="transmission"></dd></div>
+            </dl>
+            <a class="offer-button" href="./index.html#contact">Kërko ofertë</a>
+          </aside>
+        </div>
+
+        <div class="vehicle-reference">
+          <span>ID e veturës</span>
+          <strong id="car-id"></strong>
+        </div>
+
+        <section class="full-information" aria-labelledby="information-title">
+          <header class="section-heading">
+            <p class="eyebrow">Informacion i plotë</p>
+            <h2 id="information-title">Specifikimet e veturës</h2>
+          </header>
+
+          <div class="information-grid">
+            <section class="information-card information-card--wide">
+              <h3>Informacione bazë</h3>
+              <dl class="detail-list detail-list--two-columns">
+                <div><dt>Marka</dt><dd data-field="manufacturer"></dd></div>
+                <div><dt>Modeli</dt><dd data-field="model"></dd></div>
+                <div><dt>Varianti</dt><dd data-field="variant"></dd></div>
+                <div><dt>Viti</dt><dd data-field="year"></dd></div>
+                <div><dt>Regjistrimi</dt><dd data-field="registration"></dd></div>
+                <div><dt>Ngjyra</dt><dd data-field="color"></dd></div>
+                <div><dt>Ulëse</dt><dd data-field="seats"></dd></div>
+                <div><dt>Karroceria</dt><dd data-field="body"></dd></div>
+              </dl>
+            </section>
+
+            <section class="information-card">
+              <h3>Performanca</h3>
+              <dl class="detail-list">
+                <div><dt>Motori</dt><dd data-field="engine"></dd></div>
+                <div><dt>Transmisioni</dt><dd data-field="transmission"></dd></div>
+                <div><dt>Karburanti</dt><dd data-field="fuel"></dd></div>
+                <div><dt>Kilometrazha</dt><dd data-field="mileage"></dd></div>
+              </dl>
+            </section>
+
+            <section class="information-card">
+              <h3>Gjendja dhe verifikimi</h3>
+              <dl class="detail-list">
+                <div><dt>Raporti i aksidenteve</dt><dd data-field="accidentReport"></dd></div>
+                <div><dt>Inspektimi teknik</dt><dd data-field="inspection"></dd></div>
+                <div><dt>Sekuestrime</dt><dd data-field="seizures"></dd></div>
+                <div><dt>Pengje</dt><dd data-field="pledges"></dd></div>
+              </dl>
+              <p class="condition-note">Rezultatet kryesore të raporteve janë përmbledhur më poshtë.</p>
+            </section>
+          </div>
+        </section>
+
+        <section id="vehicle-report" class="vehicle-report" aria-labelledby="report-title" hidden>
+          <header class="section-heading">
+            <p class="eyebrow">Raporte të verifikuara</p>
+            <h2 id="report-title">Gjendja e veturës</h2>
+          </header>
+
+          <div class="report-grid">
+            <section id="accident-report-card" class="information-card report-card report-card--featured" hidden>
+              <h3>Historiku i aksidenteve</h3>
+              <p class="report-verdict" data-field="accidentVerdict"></p>
+              <dl class="detail-list">
+                <div><dt>Aksidente të regjistruara</dt><dd data-field="accidentCount"></dd></div>
+                <div><dt>Dëme në këtë veturë</dt><dd data-field="myDamageCount"></dd></div>
+                <div><dt>Dëme ndaj palës tjetër</dt><dd data-field="otherDamageCount"></dd></div>
+                <div><dt>Ndërrime të pronarit</dt><dd data-field="ownerChangeCount"></dd></div>
+                <div><dt>Dëmtim total</dt><dd data-field="totalLossCount"></dd></div>
+                <div><dt>Përmbytje</dt><dd data-field="floodCount"></dd></div>
+                <div><dt>Vjedhje</dt><dd data-field="theftCount"></dd></div>
+              </dl>
+            </section>
+
+            <section id="inspection-report-card" class="information-card report-card" hidden>
+              <h3>Inspektimi teknik</h3>
+              <p class="report-verdict" data-field="inspectionVerdict"></p>
+              <dl class="detail-list">
+                <div><dt>Aksident në inspektim</dt><dd data-field="inspectionAccident"></dd></div>
+                <div><dt>Riparim i thjeshtë</dt><dd data-field="simpleRepair"></dd></div>
+                <div><dt>Karroceria</dt><dd data-field="bodyCondition"></dd></div>
+                <div><dt>Motori</dt><dd data-field="engineCondition"></dd></div>
+                <div><dt>Transmisioni</dt><dd data-field="transmissionCondition"></dd></div>
+                <div><dt>Dëmtim nga uji</dt><dd data-field="waterDamage"></dd></div>
+                <div><dt>Kilometrazha në inspektim</dt><dd data-field="inspectionMileage"></dd></div>
+              </dl>
+            </section>
+
+            <section id="diagnosis-report-card" class="information-card report-card" hidden>
+              <h3>Diagnoza e karrocerisë</h3>
+              <p class="report-verdict" data-field="diagnosisVerdict"></p>
+              <dl class="detail-list">
+                <div><dt>Panele të kontrolluara</dt><dd data-field="panelsChecked"></dd></div>
+                <div><dt>Panele me vërejtje</dt><dd data-field="abnormalPanelCount"></dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <p class="report-note">Të dhënat paraqiten siç janë regjistruar në raportet e burimit dhe nuk zëvendësojnë një kontroll të pavarur para blerjes.</p>
+        </section>
+      </article>
+
+      <div id="error" class="message" hidden>
+        Detajet nuk mund të ngarkohen. <a href="./index.html#search">Kthehu te veturat</a>
+      </div>
+    </main>
+
+    <script src="../js/car-format.js?v=1"></script>
+    <script src="../js/car-details.js?v=4"></script>
+  </body>
+</html>

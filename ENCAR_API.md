@@ -1,6 +1,14 @@
 # Encar API handoff
 
-The Encar integration is isolated in `js/encar-api.js`. It does not render or style any cards.
+The Encar API client is isolated in `js/encar-api.js`. The browser calls the same-origin proxy in `server.mjs`, which forwards the request to Encar. The card template is in `html/index.html`, rendering is handled by `js/script.js`, and card styles live in `scss/search.scss` with compiled output in `css/style.css`.
+
+Start the page with:
+
+```bash
+node server.mjs
+```
+
+The proxy is required; a plain static server cannot serve `/api/cars`.
 
 `html/index.html` loads the API client before the existing `js/script.js`. When the page opens, the first twelve cars are requested automatically and exposed as:
 
@@ -32,50 +40,25 @@ The returned structure is:
       year: "2023",
       mileage: 34000,
       fuelType: "디젤",
-      photoUrl: "https://ci.encar.com/...jpg",
-      detailUrl: "https://fem.encar.com/cars/detail/42355805",
+      photoUrl: "/api/car-image?path=...",
+      detailUrl: "./car-details.html?id=42355805",
     },
   ],
 }
 ```
 
-## Rendering cards
+## Card rendering
 
-Add an empty container wherever the vehicle cards should appear:
+`html/index.html` contains the results container and a reusable card template:
 
 ```html
 <div id="cars-grid"></div>
+<template id="car-card-template">...</template>
 ```
 
-Then render the normalized objects. Prices are intentionally excluded from the normalized data and should not be displayed on vehicle cards.
+`js/script.js` waits for the initial request, clones the template for each normalized car, and fills the photograph, title, variant, year, mileage, fuel, and location. Clicking the card or “Shiko detajet” opens its local detail page. Prices are intentionally excluded.
 
-```js
-window.encarCarsRequest.then(({ cars }) => {
-  const grid = document.querySelector("#cars-grid");
-  const fragment = document.createDocumentFragment();
-
-  cars.forEach((car) => {
-    const card = document.createElement("article");
-    const title = document.createElement("h3");
-    const image = document.createElement("img");
-    const link = document.createElement("a");
-
-    title.textContent = `${car.manufacturer} ${car.model}`;
-    image.src = car.photoUrl;
-    image.alt = title.textContent;
-    image.loading = "lazy";
-    link.href = "#contact";
-    link.textContent = "Kërko ofertë";
-
-    card.append(image, title, link);
-    fragment.append(card);
-  });
-
-  grid.append(fragment);
-});
-```
-
-For the next page, increase `offset`:
+The “Shfaq më shumë” button requests the next page by increasing `offset`:
 
 ```js
 const nextPage = await window.EncarApi.searchCars({
@@ -83,6 +66,16 @@ const nextPage = await window.EncarApi.searchCars({
   limit: 12,
 });
 ```
+
+## Car detail page
+
+Each card links to `html/car-details.html?id=ENCAR_ID`. The detail page requests the sanitized car data from the same-origin route:
+
+```text
+GET /api/cars/:id
+```
+
+The response includes the gallery, model and grade, year, mileage, engine size, transmission, fuel, color, seats, body type, Encar's seizure and pledge counts, and sanitized accident, inspection, and body-diagnosis summaries. The detail page groups these fields into basic information, performance, condition, and verified-report sections. Users are never redirected to Encar. Price, VIN, registration plate, seller contact, inspector information, and the seller description are not returned to the browser.
 
 An Encar search query can be supplied through `query`. For example, BMW vehicles:
 
@@ -92,5 +85,6 @@ const bmwCars = await window.EncarApi.searchCars({
 });
 ```
 
-The Encar response contains a price field, amo na e injorojm se sdojm me pa klienti sa kushton kerri n kore hehe :)
+The proxy removes Encar's price field before returning list results to the browser.
 
+The list endpoint only provides Korean model names. `server.mjs` enriches each result with the English manufacturer, model group, and grade from Encar's per-car endpoint before the card is rendered.

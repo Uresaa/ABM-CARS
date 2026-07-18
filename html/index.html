@@ -287,6 +287,46 @@
               <a href="#" class="search__btn">Kërko Veturë</a>
             </div>
           </div>
+
+          <div class="cars-results">
+            <div class="cars-results__header">
+              <p id="cars-status" class="cars-results__status" role="status" aria-live="polite">
+                Duke ngarkuar veturat...
+              </p>
+              <p id="cars-count" class="cars-results__count"></p>
+            </div>
+
+            <div id="cars-grid" class="cars-grid" aria-label="Vetura të disponueshme"></div>
+
+            <div class="cars-results__actions">
+              <button id="cars-load-more" class="cars-load-more" type="button" hidden>
+                Shfaq më shumë
+              </button>
+            </div>
+          </div>
+
+          <template id="car-card-template">
+            <article class="car-card">
+              <div class="car-card__media">
+                <img class="car-card__image" alt="" loading="lazy" decoding="async" />
+                <span class="car-card__placeholder" hidden>Pa fotografi</span>
+              </div>
+
+              <div class="car-card__content">
+                <p class="car-card__location" data-car-location></p>
+                <h3 class="car-card__title" data-car-title></h3>
+                <p class="car-card__badge" data-car-badge></p>
+
+                <ul class="car-card__facts" aria-label="Të dhënat e veturës">
+                  <li data-car-year></li>
+                  <li data-car-mileage></li>
+                  <li data-car-fuel></li>
+                </ul>
+
+                <a class="car-card__cta" href="#" data-car-cta>Shiko detajet</a>
+              </div>
+            </article>
+          </template>
         </div>
       </section>
 
@@ -432,7 +472,8 @@
         </div>
       </footer>
     </div>
-    <script src="../js/encar-api.js"></script>
-    <script src="../js/script.js"></script>
+    <script src="../js/encar-api.js?v=2"></script>
+    <script src="../js/car-format.js?v=1"></script>
+    <script src="../js/script.js?v=2"></script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 const EncarApi = (() => {
-  const LIST_URL = "https://api.encar.com/search/car/list/general";
-  const IMAGE_URL = "https://ci.encar.com";
-  const DETAIL_URL = "https://fem.encar.com/cars/detail";
+  const LIST_URL = "/api/cars";
+  const IMAGE_URL = "/api/car-image?path=";
+  const DETAIL_URL = "./car-details.html?id=";
   const ALL_CARS_QUERY = "(And.Hidden.N._.CarType.Y.)";
 
   async function searchCars({
@@ -40,15 +40,15 @@ const EncarApi = (() => {
 
     return {
       id: car.Id,
-      manufacturer: car.Manufacturer,
-      model: car.Model,
-      badge: car.Badge,
+      manufacturer: car.ManufacturerEnglish || car.Manufacturer,
+      model: car.ModelEnglish || car.Model,
+      badge: car.BadgeEnglish || car.Badge,
       year: car.FormYear,
       mileage: Number(car.Mileage) || 0,
       fuelType: car.FuelType,
       location: car.OfficeCityState,
-      photoUrl: photoPath ? `${IMAGE_URL}${photoPath}` : null,
-      detailUrl: `${DETAIL_URL}/${encodeURIComponent(car.Id)}`,
+      photoUrl: photoPath ? `${IMAGE_URL}${encodeURIComponent(photoPath)}` : null,
+      detailUrl: `${DETAIL_URL}${encodeURIComponent(car.Id)}`,
     };
   }
 
