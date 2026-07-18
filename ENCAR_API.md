@@ -1,6 +1,6 @@
 # Encar API handoff
 
-The Encar API client is isolated in `js/encar-api.js`. The browser calls the same-origin proxy in `server.mjs`, which forwards the request to Encar. The card template is in `html/index.html`, rendering is handled by `js/script.js`, and card styles live in `scss/search.scss` with compiled output in `css/style.css`.
+The browser API client is isolated in `js/encar-api.js`. The Node backend starts in `server.mjs`, routes API requests through `server/request-handlers.mjs`, communicates with Encar through `server/encar-client.mjs`, and builds the public response in `server/car-response.mjs`. The card template is in `html/index.html`, rendering is handled by `js/script.js`, and card styles live in `scss/search.scss` with compiled output in `css/style.css`.
 
 Start the page with:
 
@@ -87,4 +87,4 @@ const bmwCars = await window.EncarApi.searchCars({
 
 The proxy removes Encar's price field before returning list results to the browser.
 
-The list endpoint only provides Korean model names. `server.mjs` enriches each result with the English manufacturer, model group, and grade from Encar's per-car endpoint before the card is rendered.
+The list endpoint only provides Korean model names. `server/request-handlers.mjs` enriches each result with the English manufacturer, model group, and grade from Encar's per-car endpoint before the card is rendered.

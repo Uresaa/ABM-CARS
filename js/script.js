@@ -23,9 +23,6 @@ function createCarCard(car) {
   const title = `${manufacturer} ${model}`.trim();
   const detailUrl = car.detailUrl;
 
-  fragment.querySelector("[data-car-location]").textContent = car.location
-    ? `Kore e Jugut · ${car.location}`
-    : "Kore e Jugut";
   fragment.querySelector("[data-car-title]").textContent = title;
   fragment.querySelector("[data-car-badge]").textContent =
     car.badge || "Detajet e modelit nuk janë listuar";
