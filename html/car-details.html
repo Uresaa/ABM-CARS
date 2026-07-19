@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../css/car-details.css?v=4" />
+    <link rel="stylesheet" href="../css/car-panel-report.css?v=2" />
   </head>
   <body>
     <header class="topbar">
@@ -137,12 +138,121 @@
             </section>
 
             <section id="diagnosis-report-card" class="information-card report-card" hidden>
-              <h3>Diagnoza e karrocerisë</h3>
+              <h3>Kontrolli i pjesëve të jashtme</h3>
               <p class="report-verdict" data-field="diagnosisVerdict"></p>
               <dl class="detail-list">
                 <div><dt>Panele të kontrolluara</dt><dd data-field="panelsChecked"></dd></div>
                 <div><dt>Panele me vërejtje</dt><dd data-field="abnormalPanelCount"></dd></div>
               </dl>
+
+              <div id="car-panel-report" class="car-panel-report">
+                <div class="car-panel-report-legend" aria-label="Shpjegimi i ngjyrave">
+                  <span class="car-panel-report-legend-item">
+                    <span class="car-panel-report-swatch car-panel-report-swatch-normal"></span>
+                    Pa vërejtje
+                  </span>
+                  <span class="car-panel-report-legend-item">
+                    <span class="car-panel-report-swatch car-panel-report-swatch-replacement"></span>
+                    E zëvendësuar
+                  </span>
+                  <span class="car-panel-report-legend-item">
+                    <span class="car-panel-report-swatch car-panel-report-swatch-attention"></span>
+                    Vërejtje tjetër
+                  </span>
+                </div>
+
+                <svg
+                  class="car-panel-report-diagram"
+                  viewBox="0 0 360 540"
+                  role="img"
+                  aria-labelledby="car-panel-report-title"
+                >
+                  <title id="car-panel-report-title">Harta e gjendjes së paneleve të veturës</title>
+                  <text
+                    class="car-panel-report-direction"
+                    x="180"
+                    y="22"
+                    text-anchor="middle"
+                  >
+                    PËRPARA
+                  </text>
+
+                  <path
+                    class="car-panel-report-outline"
+                    d="M108 48 Q180 12 252 48 L292 112 Q310 196 304 420 L260 500 Q180 528 100 500 L56 420 Q50 196 68 112 Z"
+                  ></path>
+                  <path
+                    class="car-panel-report-panel"
+                    data-car-panel="HOOD"
+                    d="M126 56 Q180 34 234 56 L250 148 L110 148 Z"
+                  ></path>
+                  <path
+                    class="car-panel-report-panel"
+                    data-car-panel="FRONT_FENDER_LEFT"
+                    d="M76 112 L110 148 L106 222 L62 214 Q60 158 76 112 Z"
+                  ></path>
+                  <path
+                    class="car-panel-report-panel"
+                    data-car-panel="FRONT_FENDER_RIGHT"
+                    d="M284 112 L250 148 L254 222 L298 214 Q300 158 284 112 Z"
+                  ></path>
+                  <rect
+                    class="car-panel-report-panel"
+                    data-car-panel="FRONT_DOOR_LEFT"
+                    x="68"
+                    y="226"
+                    width="64"
+                    height="108"
+                    rx="10"
+                  ></rect>
+                  <rect
+                    class="car-panel-report-panel"
+                    data-car-panel="FRONT_DOOR_RIGHT"
+                    x="228"
+                    y="226"
+                    width="64"
+                    height="108"
+                    rx="10"
+                  ></rect>
+                  <rect
+                    class="car-panel-report-panel"
+                    data-car-panel="BACK_DOOR_LEFT"
+                    x="68"
+                    y="340"
+                    width="64"
+                    height="108"
+                    rx="10"
+                  ></rect>
+                  <rect
+                    class="car-panel-report-panel"
+                    data-car-panel="BACK_DOOR_RIGHT"
+                    x="228"
+                    y="340"
+                    width="64"
+                    height="108"
+                    rx="10"
+                  ></rect>
+                  <path
+                    class="car-panel-report-panel"
+                    data-car-panel="TRUNK_LID"
+                    d="M112 454 L248 454 L260 492 Q180 516 100 492 Z"
+                  ></path>
+                  <path
+                    class="car-panel-report-cabin"
+                    d="M132 160 Q180 138 228 160 L244 214 L232 438 L128 438 L116 214 Z"
+                  ></path>
+                  <path
+                    class="car-panel-report-window"
+                    d="M140 174 Q180 158 220 174 L230 218 L130 218 Z"
+                  ></path>
+                  <path
+                    class="car-panel-report-window"
+                    d="M130 382 L230 382 L222 426 L138 426 Z"
+                  ></path>
+                </svg>
+
+                <ul id="car-panel-report-findings" class="car-panel-report-findings"></ul>
+              </div>
             </section>
           </div>
 
@@ -156,6 +266,6 @@
     </main>
 
     <script src="../js/car-format.js?v=1"></script>
-    <script src="../js/car-details.js?v=4"></script>
+    <script src="../js/car-details.js?v=7"></script>
   </body>
 </html>

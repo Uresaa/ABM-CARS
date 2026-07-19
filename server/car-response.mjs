@@ -76,14 +76,24 @@ function createInspectionSummary(report) {
 function createBodyDiagnosisSummary(report) {
   if (!Array.isArray(report?.items)) return null;
 
-  const panels = report.items.filter((item) => item.resultCode);
+  const panels = report.items
+    .filter(
+      (item) =>
+        typeof item.name === "string" && typeof item.resultCode === "string",
+    )
+    .map((item) => ({
+      name: item.name,
+      status: item.resultCode,
+    }));
+
   if (!panels.length) return null;
-  const abnormalPanels = panels.filter((item) => item.resultCode !== "NORMAL");
+  const abnormalPanels = panels.filter((panel) => panel.status !== "NORMAL");
 
   return {
     panelsChecked: panels.length,
     abnormalPanelCount: abnormalPanels.length,
     allPanelsNormal: abnormalPanels.length === 0,
+    panels,
   };
 }
 

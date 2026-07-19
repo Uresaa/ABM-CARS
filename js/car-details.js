@@ -5,6 +5,21 @@ const mainImage = document.querySelector("#main-image");
 const placeholder = document.querySelector("#image-placeholder");
 const thumbnails = document.querySelector("#thumbnails");
 const formatNumber = CarFormat.formatNumber;
+const panelLabels = {
+  HOOD: "Kapaku i motorit",
+  TRUNK_LID: "Kapaku i bagazhit",
+  FRONT_FENDER_LEFT: "Paneli mbi rrotën e përparme majtas",
+  FRONT_FENDER_RIGHT: "Paneli mbi rrotën e përparme djathtas",
+  FRONT_DOOR_LEFT: "Dera e përparme majtas",
+  FRONT_DOOR_RIGHT: "Dera e përparme djathtas",
+  BACK_DOOR_LEFT: "Dera e pasme majtas",
+  BACK_DOOR_RIGHT: "Dera e pasme djathtas",
+};
+
+const panelStatusLabels = {
+  NORMAL: "Pa vërejtje",
+  REPLACEMENT: "E zëvendësuar",
+};
 
 function registrationDate(value) {
   const date = String(value || "");
@@ -41,6 +56,54 @@ function showReportCard(cardId, verdictField, warning, fields) {
   fillFields(fields);
   setVerdictState(verdictField, warning);
   document.querySelector(`#${cardId}`).hidden = false;
+}
+
+function getPanelState(status) {
+  if (status === "NORMAL") return "normal";
+  if (status === "REPLACEMENT") return "replacement";
+  return "attention";
+}
+
+function getPanelStatusLabel(status) {
+  return panelStatusLabels[status] || "Kërkon kontroll";
+}
+
+function renderPanelReport(panels = []) {
+  const diagram = document.querySelector("#car-panel-report");
+  const findings = document.querySelector("#car-panel-report-findings");
+
+  const diagramPanels = Array.from(
+    diagram.querySelectorAll("[data-car-panel]"),
+  );
+
+  diagramPanels.forEach((panelElement) => {
+    panelElement.removeAttribute("data-status");
+  });
+
+  findings.replaceChildren();
+
+  let hasRenderedPanel = false;
+
+  panels.forEach((panel) => {
+    const panelElement = diagramPanels.find(
+      (diagramPanel) => diagramPanel.dataset.carPanel === panel.name,
+    );
+
+    if (!panelElement) return;
+
+    panelElement.dataset.status = getPanelState(panel.status);
+    hasRenderedPanel = true;
+
+    if (panel.status === "NORMAL") return;
+
+    const finding = document.createElement("li");
+    const panelLabel = panelLabels[panel.name] || panel.name;
+    finding.textContent = `${panelLabel}: ${getPanelStatusLabel(panel.status)}`;
+    findings.append(finding);
+  });
+
+  findings.hidden = findings.children.length === 0;
+  diagram.hidden = !hasRenderedPanel;
 }
 
 function renderReport(report) {
@@ -98,13 +161,16 @@ function renderReport(report) {
 
   if (report?.diagnosis) {
     const diagnosis = report.diagnosis;
+    const abnormalPanelWord =
+      diagnosis.abnormalPanelCount === 1 ? "panel" : "panele";
     showReportCard("diagnosis-report-card", "diagnosisVerdict", !diagnosis.allPanelsNormal, {
       diagnosisVerdict: diagnosis.allPanelsNormal
         ? "Të gjitha panelet e kontrolluara janë normale"
-        : `${diagnosis.abnormalPanelCount} panele me vërejtje`,
+        : `${diagnosis.abnormalPanelCount} ${abnormalPanelWord} me vërejtje`,
       panelsChecked: diagnosis.panelsChecked,
       abnormalPanelCount: diagnosis.abnormalPanelCount,
     });
+    renderPanelReport(diagnosis.panels);
     hasReport = true;
   }
 

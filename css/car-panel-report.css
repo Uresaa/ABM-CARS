@@ -1,0 +1,122 @@
+.car-panel-report {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #e4e9f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.car-panel-report-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.car-panel-report-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.car-panel-report-swatch {
+  width: 12px;
+  height: 12px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+}
+
+.car-panel-report-swatch-normal {
+  border-color: #6b9478;
+  background: #dfece3;
+}
+
+.car-panel-report-swatch-replacement {
+  border-color: #c83f3f;
+  background: #f7caca;
+}
+
+.car-panel-report-swatch-attention {
+  border-color: #c97b24;
+  background: #f8ddb8;
+}
+
+.car-panel-report-diagram {
+  display: block;
+  width: min(100%, 330px);
+  height: auto;
+  margin: 0 auto;
+}
+
+.car-panel-report-direction {
+  fill: var(--muted);
+  font-family: "Figtree", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.car-panel-report-outline {
+  fill: #f2f4f7;
+  stroke: #aeb8c5;
+  stroke-width: 3;
+}
+
+.car-panel-report-panel {
+  fill: #e9edf2;
+  stroke: #9ca8b6;
+  stroke-width: 2;
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease;
+}
+
+.car-panel-report-panel[data-status="normal"] {
+  fill: #dfece3;
+  stroke: #6b9478;
+}
+
+.car-panel-report-panel[data-status="replacement"] {
+  fill: #f7caca;
+  stroke: #c83f3f;
+  stroke-width: 3;
+}
+
+.car-panel-report-panel[data-status="attention"] {
+  fill: #f8ddb8;
+  stroke: #c97b24;
+  stroke-width: 3;
+}
+
+.car-panel-report-cabin {
+  fill: #ffffff;
+  stroke: #9ca8b6;
+  stroke-width: 2;
+}
+
+.car-panel-report-window {
+  fill: #dce5ed;
+  stroke: #9ca8b6;
+  stroke-width: 2;
+}
+
+.car-panel-report-findings {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.car-panel-report-findings li {
+  padding: 10px 12px;
+  border-left: 3px solid #c83f3f;
+  border-radius: 7px;
+  color: #7b2929;
+  background: #fff0f0;
+  font-size: 13px;
+  font-weight: 700;
+}
