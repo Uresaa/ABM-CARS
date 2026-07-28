@@ -26,19 +26,24 @@
       <header class="header">
         <div class="container">
           <div class="header__wrapper">
-            <a href="#" class="logo" src="#home">
+            <a href="./index.html" class="logo">
               <img src="../images/logo.png" alt="ABM Cars" />
             </a>
 
-            <nav class="nav">
+            <nav class="nav" id="nav">
               <ul class="nav__list">
-                <li><a href="#home">Ballina</a></li>
-                <li><a href="#cars">Kërko Veturë</a></li>
-                <li><a href="#whyus">Pse Ne</a></li>
-                <li><a href="#faq">Pyetje</a></li>
-                <li><a href="#contact">Kontakt</a></li>
+                <li><a href="./index.html#home">Ballina</a></li>
+                <li><a href="./index.html#cars">Kërko Veturë</a></li>
+                <li><a href="./index.html#whyus">Pse Ne</a></li>
+                <li><a href="./index.html#faq">Pyetje</a></li>
+                <li><a href="./index.html#contact">Kontakt</a></li>
               </ul>
             </nav>
+            <button class="menu-toggle" id="menu-toggle">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </div>
         </div>
       </header>
@@ -46,8 +51,6 @@
       <section class="hero" id="home">
         <div class="container">
           <div class="hero__content">
-            <!-- LEFT SIDE -->
-
             <div class="hero__left">
               <span class="hero__subtitle"> IMPORT DIREKT NGA KOREA </span>
 
@@ -75,8 +78,8 @@
                   <div class="search__group">
                     <label>Marka</label>
 
-                    <select>
-                      <option selected>Zgjidh markën</option>
+                    <select id="brand">
+                      <option value="">Zgjidh markën</option>
 
                       <option>Audi</option>
                       <option>BMW</option>
@@ -127,7 +130,6 @@
                       <option>Rolls-Royce</option>
                       <option>Scania</option>
                       <option>Smart</option>
-                      <option>SS Motors</option>
                       <option>SsangYong</option>
                       <option>Subaru</option>
                       <option>Suzuki</option>
@@ -140,15 +142,15 @@
 
                   <div class="search__group">
                     <label>Modeli</label>
-                    <select>
-                      <option>Të gjitha</option>
+                    <select id="model">
+                      <option value="">Zgjidh modelin</option>
                     </select>
                   </div>
 
                   <div class="search__group">
                     <label>Tipi</label>
-                    <select>
-                      <option>Të gjitha</option>
+                    <select id="type">
+                      <option>Zgjidh tipin</option>
                     </select>
                   </div>
 
@@ -161,13 +163,6 @@
                       <option>Elektrik</option>
                     </select>
                   </div>
-
-                  <!-- <div class="search__group">
-                    <label>Ngjyra</label>
-                    <select>
-                      <option>Të gjitha</option>
-                    </select>
-                  </div> -->
                 </div>
 
                 <div class="search__filters-extra">
@@ -186,23 +181,6 @@
                       <option>2025</option>
                     </select>
                   </div>
-
-                  <!-- <div class="search__group">
-                    <label>Viti deri</label>
-                    <select>
-                      <option>2025</option>
-                      <option>2024</option>
-                      <option>2023</option>
-                      <option>2022</option>
-                      <option>2021</option>
-                      <option>2020</option>
-                      <option>2019</option>
-                      <option>2018</option>
-                      <option>2017</option>
-                      <option>2016</option>
-                      <option>2015</option>
-                    </select>
-                  </div> -->
 
                   <div class="search__group">
                     <label>Kilometra nga</label>
@@ -252,19 +230,6 @@
                       <option>Më shumë se €50,000</option>
                     </select>
                   </div>
-                  <!-- 
-                  <div class="search__group">
-                    <label>Çmimi deri</label>
-                    <select>
-                      <option selected>Max</option>
-                      <option>Pa limit</option>
-                      <option>10,000</option>
-                      <option>20,000</option>
-                      <option>30,000</option>
-                      <option>50,000</option>
-                      <option>100,000</option>
-                    </select>
-                  </div> -->
                 </div>
 
                 <div class="search__actions">
@@ -284,195 +249,6 @@
             GJEJ VETURËN
             <span>Tënde ideale.</span>
           </h2>
-
-          <!-- <div class="search__box">
-            <h3 class="search__box-title">KRITERET E KËRKIMIT</h3>
-
-            <div class="search__grid">
-              <div class="search__group">
-                <label>Marka</label>
-
-                <select>
-                  <option selected>Zgjidh markën</option>
-
-                  <option>Audi</option>
-                  <option>BMW</option>
-                  <option>Mercedes-Benz</option>
-                  <option>Volkswagen</option>
-
-                  <option>Alfa Romeo</option>
-                  <option>Aston Martin</option>
-                  <option>BAIC</option>
-                  <option>Bentley</option>
-                  <option>BYD</option>
-                  <option>Cadillac</option>
-                  <option>Chevrolet</option>
-                  <option>Chrysler</option>
-                  <option>Citroen</option>
-                  <option>Daewoo</option>
-                  <option>Daihatsu</option>
-                  <option>Dodge</option>
-                  <option>DongFeng</option>
-                  <option>Ferrari</option>
-                  <option>Fiat</option>
-                  <option>Ford</option>
-                  <option>Genesis</option>
-                  <option>GMC</option>
-                  <option>Honda</option>
-                  <option>Hyundai</option>
-                  <option>Ineos</option>
-                  <option>Infiniti</option>
-                  <option>International</option>
-                  <option>Isuzu</option>
-                  <option>IVECO</option>
-                  <option>Jaguar</option>
-                  <option>Jeep</option>
-                  <option>Kia</option>
-                  <option>Lamborghini</option>
-                  <option>Land Rover</option>
-                  <option>Lexus</option>
-                  <option>Lincoln</option>
-                  <option>Lotus</option>
-                  <option>Maserati</option>
-                  <option>Mazda</option>
-                  <option>McLaren</option>
-                  <option>MINI</option>
-                  <option>Nissan</option>
-                  <option>Peugeot</option>
-                  <option>Polestar</option>
-                  <option>Porsche</option>
-                  <option>Renault</option>
-                  <option>Rolls-Royce</option>
-                  <option>Scania</option>
-                  <option>Smart</option>
-                  <option>SS Motors</option>
-                  <option>SsangYong</option>
-                  <option>Subaru</option>
-                  <option>Suzuki</option>
-                  <option>Tata Daewoo</option>
-                  <option>Tesla</option>
-                  <option>Toyota</option>
-                  <option>Volvo</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Modeli</label>
-
-                <select>
-                  <option>Të gjitha</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Tipi</label>
-
-                <select>
-                  <option>Të gjitha</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Karburanti</label>
-
-                <select>
-                  <option>Të gjitha</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Ngjyra</label>
-
-                <select>
-                  <option>Të gjitha</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="search__filters-extra">
-              <div class="search__group">
-                <label>Viti nga</label>
-                <select>
-                  <option>2015</option>
-                  <option>2016</option>
-                  <option>2017</option>
-                  <option>2018</option>
-                  <option>2019</option>
-                  <option>2020</option>
-                  <option>2021</option>
-                  <option>2022</option>
-                  <option>2023</option>
-                  <option>2024</option>
-                  <option>2025</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Viti deri</label>
-                <select>
-                  <option>2025</option>
-                  <option>2024</option>
-                  <option>2023</option>
-                  <option>2022</option>
-                  <option>2021</option>
-                  <option>2020</option>
-                  <option>2019</option>
-                  <option>2018</option>
-                  <option>2017</option>
-                  <option>2016</option>
-                  <option>2015</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Kilometra nga</label>
-                <select>
-                  <option>0</option>
-                  <option>50.000+</option>
-                  <option>100.000+</option>
-                  <option>150.000+</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Kilometra deri</label>
-                <select>
-                  <option>50.000</option>
-                  <option>100.000</option>
-                  <option>150.000</option>
-                  <option>200.000+</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Çmimi nga</label>
-                <select>
-                  <option>Pa limit</option>
-                  <option>5,000</option>
-                  <option>10,000</option>
-                  <option>15,000</option>
-                  <option>20,000</option>
-                  <option>30,000</option>
-                </select>
-              </div>
-
-              <div class="search__group">
-                <label>Çmimi deri</label>
-                <select>
-                  <option>Pa limit</option>
-                  <option>10,000</option>
-                  <option>20,000</option>
-                  <option>30,000</option>
-                  <option>50,000</option>
-                  <option>100,000</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="search__actions">
-              <a href="#" class="search__btn">Kërko Veturë</a>
-            </div>
-          </div> -->
 
           <div class="cars-results">
             <div class="cars-results__header">
@@ -586,9 +362,9 @@
                 <span>+</span>
               </button>
               <div class="faq__answer">
-                Transportojmë në Shqipëri, Kosovë, Maqedoni të Veriut, vendet e
-                BE-së, Australi, Kanada dhe tregje të tjera. Na kontaktoni për
-                konfirmim të disponibilitetit.
+                Transportojmë vetura në Kosovë, Shqipëri, Maqedoni të Veriut,
+                Mal të Zi dhe në vendet e Evropës. Për destinacione të tjera, na
+                kontaktoni për të konfirmuar mundësinë e transportit.
               </div>
             </div>
 
@@ -660,13 +436,6 @@
           <div class="footer-map">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d395.2876283435995!2d20.482856654779972!3d42.78143460672145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2s!4v1783098491869!5m2!1sen!2s"
-              width="600"
-              height="450"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin"
-              height="100%"
               style="border: 0"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
@@ -679,5 +448,7 @@
     <script src="../js/encar-api.js?v=2"></script>
     <script src="../js/car-format.js?v=1"></script>
     <script src="../js/script.js?v=2"></script>
+    <script src="../js/cars-data.js"></script>
+    <script src="../js/search.js"></script>
   </body>
 </html>

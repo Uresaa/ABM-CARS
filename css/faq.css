@@ -1,5 +1,5 @@
 .faq {
-  padding: 90px 100px;
+  padding: 90px 0;
   background: #111111;
   font-family: "Figtree", sans-serif;
 }
@@ -25,9 +25,6 @@
   flex-direction: column;
   gap: 15px;
 }
-.faq {
-  /* ITEM */
-}
 .faq__item {
   border: none;
   border-radius: 12px;
@@ -37,9 +34,6 @@
 }
 .faq__item:hover {
   transform: translateY(-2px);
-}
-.faq {
-  /* QUESTION */
 }
 .faq__question {
   width: 100%;
@@ -60,9 +54,6 @@
   transition: 0.3s ease;
   color: #1e40af;
 }
-.faq {
-  /* ANSWER */
-}
 .faq__answer {
   max-height: 0;
   overflow: hidden;
@@ -71,15 +62,88 @@
   line-height: 1.6;
   transition: max-height 0.4s ease, padding 0.3s ease;
 }
-.faq {
-  /* ACTIVE STATE */
-}
 .faq__item.active .faq__answer {
   max-height: 1000px;
   padding: 0 20px 20px;
 }
 .faq__item.active .faq__question span {
   transform: rotate(45deg);
+}
+@media (max-width: 1200px) {
+  .faq .faq {
+    padding: 80px 0;
+  }
+  .faq .faq__title {
+    font-size: 60px;
+  }
+}
+@media (max-width: 992px) {
+  .faq .faq {
+    padding: 70px 0px;
+  }
+  .faq .faq__header {
+    max-width: 100%;
+    margin-bottom: 35px;
+  }
+  .faq .faq__title {
+    font-size: 52px;
+  }
+  .faq .faq__question {
+    padding: 18px;
+    font-size: 17px;
+  }
+  .faq .faq__answer {
+    font-size: 15px;
+  }
+}
+@media (max-width: 768px) {
+  .faq .faq {
+    padding: 60px 0;
+  }
+  .faq .faq__title {
+    font-size: 42px;
+  }
+  .faq .faq__question {
+    padding: 18px 16px;
+    font-size: 16px;
+  }
+  .faq .faq__question span {
+    font-size: 20px;
+  }
+  .faq .faq__answer {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+@media (max-width: 576px) {
+  .faq .faq {
+    padding: 50px 0;
+  }
+  .faq .faq__header {
+    margin-bottom: 30px;
+  }
+  .faq .faq__subtitle {
+    font-size: 13px;
+  }
+  .faq .faq__title {
+    font-size: 36px;
+  }
+  .faq .faq__question {
+    padding: 16px 14px;
+    font-size: 15px;
+    gap: 12px;
+  }
+  .faq .faq__question span {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .faq .faq__answer {
+    padding: 0 14px;
+    font-size: 14px;
+  }
+  .faq .faq__item.active .faq__answer {
+    padding: 0 14px 16px;
+  }
 }
 
 /*# sourceMappingURL=faq.css.map */

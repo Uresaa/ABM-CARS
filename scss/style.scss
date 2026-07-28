@@ -7,6 +7,14 @@
 @use "whyus";
 @use "faq";
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   background-color: colors.$bg-color;
+  margin: 0;
+  color: colors.$font-color;
+  font-family: fonts.$font-body;
+  padding: 0 15px;
 }

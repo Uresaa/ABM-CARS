@@ -1,8 +1,11 @@
+@use "colors";
+@use "fonts";
+
 .car-panel-report {
   margin-top: 24px;
   padding: 20px;
-  background: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: colors.$surface-color;
+  border: 1px solid colors.$border-color;
   border-radius: 16px;
 }
 
@@ -11,10 +14,10 @@
   flex-wrap: wrap;
   gap: 12px 20px;
   margin-bottom: 20px;
-  color: #8a94a6;
-  font-family: "Figtree", sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  color: colors.$text-color;
+  font-family: fonts.$font-body;
+  font-size: fonts.$p-small;
+  font-weight: fonts.$semibold;
 }
 
 .car-panel-report-legend-item {
@@ -53,50 +56,50 @@
 }
 
 .car-panel-report-direction {
-  fill: #8a94a6;
-  font-family: "Figtree", sans-serif;
+  fill: colors.$text-color;
+  font-family: fonts.$font-body;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: fonts.$bold;
   letter-spacing: 0.12em;
 }
 
 .car-panel-report-outline {
-  fill: #1a1a1a;
-  stroke: #8a94a6;
+  fill: colors.$surface-color;
+  stroke: colors.$text-color;
   stroke-width: 3;
 }
 
 .car-panel-report-cabin {
-  fill: #111111;
-  stroke: #8a94a6;
+  fill: colors.$bg-color;
+  stroke: colors.$text-color;
   stroke-width: 2;
 }
 
 .car-panel-report-window {
-  fill: #202733;
-  stroke: #8a94a6;
+  fill: colors.$input-color;
+  stroke: colors.$text-color;
   stroke-width: 2;
 }
 
 .car-panel-report-panel {
-  fill: #202733;
-  stroke: #8a94a6;
+  fill: colors.$input-color;
+  stroke: colors.$text-color;
   stroke-width: 2;
   transition: 0.3s ease;
 }
 
-.car-panel-report-panel[data-status=normal] {
+.car-panel-report-panel[data-status="normal"] {
   fill: rgba(34, 197, 94, 0.2);
   stroke: #22c55e;
 }
 
-.car-panel-report-panel[data-status=replacement] {
+.car-panel-report-panel[data-status="replacement"] {
   fill: rgba(239, 68, 68, 0.22);
   stroke: #ef4444;
   stroke-width: 3;
 }
 
-.car-panel-report-panel[data-status=attention] {
+.car-panel-report-panel[data-status="attention"] {
   fill: rgba(245, 158, 11, 0.22);
   stroke: #f59e0b;
   stroke-width: 3;
@@ -116,45 +119,54 @@
   border-radius: 8px;
   background: rgba(239, 68, 68, 0.1);
   color: #fca5a5;
-  font-family: "Figtree", sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-family: fonts.$font-body;
+  font-size: fonts.$p-small;
+  font-weight: fonts.$semibold;
 }
 
 @media (max-width: 768px) {
   .car-panel-report {
     padding: 20px 16px;
   }
+
   .car-panel-report-legend {
     justify-content: center;
     text-align: center;
   }
+
   .car-panel-report-diagram {
     width: 100%;
     max-width: 300px;
   }
+
   .car-panel-report-findings {
     margin-top: 16px;
   }
 }
+
 @media (max-width: 576px) {
   .car-panel-report {
     padding: 16px 12px;
   }
+
   .car-panel-report-legend {
     flex-direction: column;
     align-items: center;
     gap: 12px;
   }
+
   .car-panel-report-legend-item {
     justify-content: center;
   }
+
   .car-panel-report-diagram {
     max-width: 240px;
   }
+
   .car-panel-report-direction {
     font-size: 9px;
   }
+
   .car-panel-report-findings li {
     padding: 10px 12px;
     text-align: center;
@@ -162,17 +174,18 @@
     line-height: 1.5;
   }
 }
+
 @media (max-width: 400px) {
   .car-panel-report-diagram {
     max-width: 200px;
   }
+
   .car-panel-report-swatch {
     width: 10px;
     height: 10px;
   }
+
   .car-panel-report-legend {
     font-size: 12px;
   }
 }
-
-/*# sourceMappingURL=car-panel-report.css.map */

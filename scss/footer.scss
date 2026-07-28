@@ -79,6 +79,7 @@
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid colors.$border-color;
+    margin-top: 60px;
 
     iframe {
       width: 100%;
@@ -90,5 +91,55 @@
     color: inherit;
     display: flex;
     align-items: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .contact-footer {
+    padding: 60px 30px;
+
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .footer-map {
+      height: 320px;
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .contact-footer {
+    padding: 50px 15px;
+
+    .footer-grid {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-info {
+      width: 100%;
+
+      h2 {
+        font-size: 42px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
+
+    .contact-item {
+      text-align: left;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer-map {
+      width: 100%;
+      height: 280px;
+    }
   }
 }

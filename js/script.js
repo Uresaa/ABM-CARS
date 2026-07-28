@@ -29,7 +29,9 @@ function createCarCard(car) {
   fragment.querySelector("[data-car-year]").textContent = car.year || "—";
   fragment.querySelector("[data-car-mileage]").textContent =
     `${CarFormat.formatNumber(car.mileage)} km`;
-  fragment.querySelector("[data-car-fuel]").textContent = CarFormat.fuel(car.fuelType);
+  fragment.querySelector("[data-car-fuel]").textContent = CarFormat.fuel(
+    car.fuelType,
+  );
 
   const callToAction = fragment.querySelector("[data-car-cta]");
   callToAction.dataset.carId = car.id;
@@ -100,7 +102,9 @@ async function loadMoreCars() {
   carsLoadMore.textContent = "Duke ngarkuar...";
 
   try {
-    const result = await window.EncarApi.searchCars({ offset: carsGrid.children.length });
+    const result = await window.EncarApi.searchCars({
+      offset: carsGrid.children.length,
+    });
     totalCars = result.total;
     appendCars(result.cars);
     updateCarsState();
@@ -118,3 +122,13 @@ if (carCardTemplate && carsGrid) {
   carsLoadMore.addEventListener("click", loadMoreCars);
   loadInitialCars();
 }
+
+const menuToggle = document.getElementById("menu-toggle");
+const nav = document.getElementById("nav");
+
+console.log(menuToggle);
+console.log(nav);
+
+menuToggle.addEventListener("click", function () {
+  nav.classList.toggle("active");
+});
