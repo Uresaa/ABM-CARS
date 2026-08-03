@@ -23,9 +23,7 @@ const panelStatusLabels = {
 
 function registrationDate(value) {
   const date = String(value || "");
-  return /^\d{6}$/.test(date)
-    ? `${date.slice(4)} / ${date.slice(0, 4)}`
-    : "—";
+  return /^\d{6}$/.test(date) ? `${date.slice(4)} / ${date.slice(0, 4)}` : "—";
 }
 
 function fillFields(values) {
@@ -119,43 +117,57 @@ function renderReport(report) {
       accident.theftCount,
     ].some((count) => count > 0);
 
-    showReportCard("accident-report-card", "accidentVerdict", hasSeriousHistory, {
-      accidentVerdict: hasSeriousHistory
-        ? `${accident.accidentCount} aksidente të regjistruara`
-        : "Pa aksidente të regjistruara",
-      accidentCount: accident.accidentCount,
-      myDamageCount: accident.myDamageCount,
-      otherDamageCount: accident.otherDamageCount,
-      ownerChangeCount: accident.ownerChangeCount,
-      totalLossCount: accident.totalLossCount,
-      floodCount: accident.floodCount,
-      theftCount: accident.theftCount,
-    });
+    showReportCard(
+      "accident-report-card",
+      "accidentVerdict",
+      hasSeriousHistory,
+      {
+        accidentVerdict: hasSeriousHistory
+          ? `${accident.accidentCount} aksidente të regjistruara`
+          : "Pa aksidente të regjistruara",
+        accidentCount: accident.accidentCount,
+        myDamageCount: accident.myDamageCount,
+        otherDamageCount: accident.otherDamageCount,
+        ownerChangeCount: accident.ownerChangeCount,
+        totalLossCount: accident.totalLossCount,
+        floodCount: accident.floodCount,
+        theftCount: accident.theftCount,
+      },
+    );
     hasReport = true;
   }
 
   if (report?.inspection) {
     const inspection = report.inspection;
     const hasInspectionWarning =
-      [inspection.accident, inspection.simpleRepair, inspection.waterDamage]
-        .some((value) => value === true) ||
-      [inspection.bodyOk, inspection.engineOk, inspection.transmissionOk]
-        .some((value) => value === false);
+      [
+        inspection.accident,
+        inspection.simpleRepair,
+        inspection.waterDamage,
+      ].some((value) => value === true) ||
+      [inspection.bodyOk, inspection.engineOk, inspection.transmissionOk].some(
+        (value) => value === false,
+      );
 
-    showReportCard("inspection-report-card", "inspectionVerdict", hasInspectionWarning, {
-      inspectionVerdict: hasInspectionWarning
-        ? "Raporti i inspektimit përmban vërejtje"
-        : "Pa vërejtje kryesore në inspektim",
-      inspectionAccident: yesNo(inspection.accident),
-      simpleRepair: yesNo(inspection.simpleRepair),
-      bodyCondition: conditionLabel(inspection.bodyOk),
-      engineCondition: conditionLabel(inspection.engineOk),
-      transmissionCondition: conditionLabel(inspection.transmissionOk),
-      waterDamage: yesNo(inspection.waterDamage),
-      inspectionMileage: inspection.mileage
-        ? `${formatNumber(inspection.mileage)} km`
-        : "—",
-    });
+    showReportCard(
+      "inspection-report-card",
+      "inspectionVerdict",
+      hasInspectionWarning,
+      {
+        inspectionVerdict: hasInspectionWarning
+          ? "Raporti i inspektimit përmban vërejtje"
+          : "Pa vërejtje kryesore në inspektim",
+        inspectionAccident: yesNo(inspection.accident),
+        simpleRepair: yesNo(inspection.simpleRepair),
+        bodyCondition: conditionLabel(inspection.bodyOk),
+        engineCondition: conditionLabel(inspection.engineOk),
+        transmissionCondition: conditionLabel(inspection.transmissionOk),
+        waterDamage: yesNo(inspection.waterDamage),
+        inspectionMileage: inspection.mileage
+          ? `${formatNumber(inspection.mileage)} km`
+          : "—",
+      },
+    );
     hasReport = true;
   }
 
@@ -163,13 +175,18 @@ function renderReport(report) {
     const diagnosis = report.diagnosis;
     const abnormalPanelWord =
       diagnosis.abnormalPanelCount === 1 ? "panel" : "panele";
-    showReportCard("diagnosis-report-card", "diagnosisVerdict", !diagnosis.allPanelsNormal, {
-      diagnosisVerdict: diagnosis.allPanelsNormal
-        ? "Të gjitha panelet e kontrolluara janë normale"
-        : `${diagnosis.abnormalPanelCount} ${abnormalPanelWord} me vërejtje`,
-      panelsChecked: diagnosis.panelsChecked,
-      abnormalPanelCount: diagnosis.abnormalPanelCount,
-    });
+    showReportCard(
+      "diagnosis-report-card",
+      "diagnosisVerdict",
+      !diagnosis.allPanelsNormal,
+      {
+        diagnosisVerdict: diagnosis.allPanelsNormal
+          ? "Të gjitha panelet e kontrolluara janë normale"
+          : `${diagnosis.abnormalPanelCount} ${abnormalPanelWord} me vërejtje`,
+        panelsChecked: diagnosis.panelsChecked,
+        abnormalPanelCount: diagnosis.abnormalPanelCount,
+      },
+    );
     renderPanelReport(diagnosis.panels);
     hasReport = true;
   }
@@ -242,19 +259,26 @@ function renderCar(car) {
     photos: `${car.photos?.length || 0} fotografi`,
     accidentReport: car.report?.accident
       ? `${car.report.accident.accidentCount} të regjistruara`
-      : car.accidentReportAvailable ? "Në dispozicion" : "Jo publik",
+      : car.accidentReportAvailable
+        ? "Në dispozicion"
+        : "Jo publik",
     inspection: car.report?.inspection
       ? "Raporti u ngarkua"
       : car.inspectionAvailable
         ? "Në dispozicion"
         : "Jo publik",
-    seizures: car.seizingCount ? `${car.seizingCount} të regjistruara` : "0 të regjistruara",
-    pledges: car.pledgeCount ? `${car.pledgeCount} të regjistruara` : "0 të regjistruara",
+    seizures: car.seizingCount
+      ? `${car.seizingCount} të regjistruara`
+      : "0 të regjistruara",
+    pledges: car.pledgeCount
+      ? `${car.pledgeCount} të regjistruara`
+      : "0 të regjistruara",
   };
 
   document.title = `${title} | ABM CARS KOREA`;
   document.querySelector("#car-title").textContent = title;
-  document.querySelector("#car-grade").textContent = grade || "Detajet e modelit";
+  document.querySelector("#car-grade").textContent =
+    grade || "Detajet e modelit";
   document.querySelector("#car-id").textContent = car.id;
 
   fillFields(values);
