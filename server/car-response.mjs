@@ -6,10 +6,11 @@ const carListFields = [
   "FormYear",
   "Mileage",
   "FuelType",
+  "Transmission",
   "Photos",
 ];
 
-export function createCarListItem(car, category = null) {
+export function createCarListItem(car, category = null, transmission = null) {
   const carListItem = {};
 
   for (const field of carListFields) {
@@ -20,6 +21,10 @@ export function createCarListItem(car, category = null) {
     carListItem.ManufacturerEnglish = category.manufacturerEnglishName;
     carListItem.ModelEnglish = category.modelGroupEnglishName;
     carListItem.BadgeEnglish = category.gradeEnglishName;
+  }
+
+  if (transmission) {
+    carListItem.Transmission = transmission;
   }
 
   return carListItem;
@@ -64,7 +69,8 @@ function createInspectionSummary(report) {
 
   return {
     accident: typeof master.accdient === "boolean" ? master.accdient : null,
-    simpleRepair: typeof master.simpleRepair === "boolean" ? master.simpleRepair : null,
+    simpleRepair:
+      typeof master.simpleRepair === "boolean" ? master.simpleRepair : null,
     bodyOk: detail.carStateType ? detail.carStateType.code === "1" : null,
     engineOk: getInspectionCondition(report.inners, "s001"),
     transmissionOk: getInspectionCondition(report.inners, "s002"),
@@ -113,11 +119,13 @@ export function createCarDetailsResponse(carId, car, report) {
 
   return {
     id: String(carId),
-    manufacturer: category.manufacturerEnglishName || category.manufacturerName || "",
+    manufacturer:
+      category.manufacturerEnglishName || category.manufacturerName || "",
     model: category.modelGroupEnglishName || category.modelName || "",
     modelDetail: category.modelName || "",
     grade: category.gradeEnglishName || category.gradeName || "",
-    gradeDetail: category.gradeDetailEnglishName || category.gradeDetailName || "",
+    gradeDetail:
+      category.gradeDetailEnglishName || category.gradeDetailName || "",
     year: category.formYear || "",
     registrationMonth: category.yearMonth || "",
     mileage: Number(spec.mileage) || 0,
@@ -134,7 +142,10 @@ export function createCarDetailsResponse(carId, car, report) {
     report,
     photos: Array.isArray(car.photos)
       ? car.photos
-          .filter((photo) => typeof photo.path === "string" && photo.path.startsWith("/"))
+          .filter(
+            (photo) =>
+              typeof photo.path === "string" && photo.path.startsWith("/"),
+          )
           .map((photo) => ({
             code: photo.code,
             type: photo.type,

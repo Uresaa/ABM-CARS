@@ -32,6 +32,12 @@ function createCarCard(car) {
   fragment.querySelector("[data-car-fuel]").textContent = CarFormat.fuel(
     car.fuelType,
   );
+  console.log("Të dhënat e veturës:", car); // Shto këtë për të kontrolluar pronat në Console (F12)
+
+  fragment.querySelector("[data-car-transmission]").textContent =
+    CarFormat.transmission(
+      car.transmission || car.transmissionName || car.gearbox,
+    );
 
   const callToAction = fragment.querySelector("[data-car-cta]");
   callToAction.dataset.carId = car.id;

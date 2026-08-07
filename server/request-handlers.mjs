@@ -13,16 +13,22 @@ import { getCachedCategory, setCachedCategory } from "./car-cache.mjs";
 import { sendJson } from "./http-response.mjs";
 
 async function loadCarListItem(car) {
-  const cachedCategory = getCachedCategory(car.Id);
-  if (cachedCategory) return createCarListItem(car, cachedCategory);
+  const cached = getCachedCategory(car.Id);
+
+  if (cached && typeof cached === "object" && "transmission" in cached) {
+    return createCarListItem(car, cached.category, cached.transmission);
+  }
 
   try {
     const response = await requestCarDetails(car.Id, { timeoutMs: 8000 });
     if (!response.ok) return createCarListItem(car);
 
-    const { category = {} } = await response.json();
-    setCachedCategory(car.Id, category);
-    return createCarListItem(car, category);
+    const detail = await response.json();
+    const category = detail.category || {};
+    const transmission = detail.spec?.transmissionName || "";
+
+    setCachedCategory(car.Id, { category, transmission });
+    return createCarListItem(car, category, transmission);
   } catch {
     return createCarListItem(car);
   }
@@ -32,7 +38,9 @@ export async function handleCarListRequest(url, response) {
   const encarResponse = await requestCarList(url.searchParams);
 
   if (!encarResponse.ok) {
-    sendJson(response, encarResponse.status, { error: "Cars could not be loaded" });
+    sendJson(response, encarResponse.status, {
+      error: "Cars could not be loaded",
+    });
     return;
   }
 
@@ -48,7 +56,9 @@ export async function handleCarDetailRequest(carId, response) {
   const encarResponse = await requestCarDetails(carId);
 
   if (!encarResponse.ok) {
-    sendJson(response, encarResponse.status, { error: "Car details could not be loaded" });
+    sendJson(response, encarResponse.status, {
+      error: "Car details could not be loaded",
+    });
     return;
   }
 
@@ -71,7 +81,9 @@ export async function handleCarImageRequest(url, response) {
   const encarResponse = await requestCarImage(imagePath);
 
   if (!encarResponse.ok) {
-    sendJson(response, encarResponse.status, { error: "Image could not be loaded" });
+    sendJson(response, encarResponse.status, {
+      error: "Image could not be loaded",
+    });
     return;
   }
 

@@ -46,6 +46,7 @@ const EncarApi = (() => {
       year: car.FormYear,
       mileage: Number(car.Mileage) || 0,
       fuelType: car.FuelType,
+      transmission: car.Transmission,
       photoUrl: photoPath
         ? `${IMAGE_URL}${encodeURIComponent(photoPath)}`
         : null,

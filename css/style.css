@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .header {
   position: fixed;
   inset: 0 0 auto 0;
@@ -345,8 +346,13 @@
     font-size: clamp(58px, 6vw, 72px);
   }
   .hero__search {
-    max-width: 540px;
+    max-width: 560px;
     padding: 28px;
+  }
+  /* Këtu kalon në 2 kolona që në 1200px që të ketë vend boll */
+  .hero__search .search__grid,
+  .hero__search .search__filters-extra {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 @media (max-width: 992px) {
@@ -386,6 +392,25 @@
   .hero__search .search__grid,
   .hero__search .search__filters-extra {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 990px) {
+  .hero__search .search__group select {
+    font-size: 13px;
+    padding: 0 8px;
+  }
+}
+@media (max-width: 860px) {
+  .hero__content {
+    flex-direction: column;
+    align-items: center;
+  }
+  .hero__left {
+    max-width: 100%;
+    text-align: center;
+  }
+  .hero__search {
+    max-width: 100%;
   }
 }
 /* =======================================
