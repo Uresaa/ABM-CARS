@@ -1,4 +1,4 @@
-// Keep in sync with WON_PER_EUR in js/script.js, used there to convert the
+// Keep in sync with WON_PER_EUR in js/encar-filter.js, used there to convert the
 // price filter's EUR bounds into Encar's won-based query units.
 const WON_PER_EUR = 1698.46;
 

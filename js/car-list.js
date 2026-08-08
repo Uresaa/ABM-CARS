@@ -55,7 +55,7 @@
           car.transmission || car.transmissionName || car.gearbox,
         );
       fragment.querySelector("[data-car-kosovo-price]").textContent =
-        CarPricing.formatSellingPrice(car.sellingPriceEur);
+        CarFormat.formatPrice(car.sellingPriceEur);
 
       const callToAction = fragment.querySelector("[data-car-cta]");
       callToAction.dataset.carId = car.id;

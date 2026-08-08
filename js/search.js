@@ -90,7 +90,8 @@
   function searchCars() {
     if (!validMileageRange()) return;
 
-    const [priceFrom = "", priceTo = ""] = filters.price.value.split(":");
+    const [priceFromEur = "", priceToEur = ""] =
+      filters.price.value.split(":");
     const query = window.EncarApi.buildSearchQuery({
       categoryQuery: filters.model.value || filters.brand.value,
       transmission: filters.transmission.value,
@@ -98,8 +99,8 @@
       yearFrom: filters.yearFrom.value,
       mileageFrom: filters.mileageFrom.value,
       mileageTo: filters.mileageTo.value,
-      priceFrom: window.CarPricing.euroToEncarPriceUnit(priceFrom),
-      priceTo: window.CarPricing.euroToEncarPriceUnit(priceTo),
+      priceFromEur,
+      priceToEur,
     });
 
     window.dispatchEvent(

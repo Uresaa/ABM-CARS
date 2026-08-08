@@ -50,6 +50,12 @@ const CarFormat = (() => {
     return numberFormatter.format(value);
   }
 
+  function formatPrice(value) {
+    return typeof value === "number"
+      ? `${formatNumber(Math.round(value))} €`
+      : "Çmimi sipas kërkesës";
+  }
+
   function manufacturer(value) {
     return manufacturerNames[value] || value || "";
   }
@@ -76,6 +82,7 @@ const CarFormat = (() => {
 
   return Object.freeze({
     formatNumber,
+    formatPrice,
     manufacturer,
     model,
     fuel,

@@ -1,5 +1,6 @@
 const EncarFilter = (() => {
   const ALL_CARS_QUERY = "(And.Hidden.N.)";
+  const WON_PER_EUR = 1698.46;
 
   function readFilterOptions(filterData, filterName) {
     const pending = [filterData];
@@ -35,6 +36,10 @@ const EncarFilter = (() => {
     return `${name}.range(${lower || ""}..${upper || ""}).`;
   }
 
+  function euroToEncarPriceUnit(priceEur) {
+    return priceEur ? Math.round((priceEur * WON_PER_EUR) / 10000) : "";
+  }
+
   function buildQuery({
     categoryQuery,
     fuel,
@@ -42,15 +47,19 @@ const EncarFilter = (() => {
     yearFrom,
     mileageFrom,
     mileageTo,
-    priceFrom,
-    priceTo,
+    priceFromEur,
+    priceToEur,
   } = {}) {
     const conditions = [
       fuel && `FuelType.${fuel}.`,
       transmission && `Transmission.${transmission}.`,
       createRangeCondition("Year", yearFrom && `${yearFrom}00`, ""),
       createRangeCondition("Mileage", mileageFrom, mileageTo),
-      createRangeCondition("Price", priceFrom, priceTo),
+      createRangeCondition(
+        "Price",
+        euroToEncarPriceUnit(priceFromEur),
+        euroToEncarPriceUnit(priceToEur),
+      ),
     ].filter(Boolean);
     const baseQuery = categoryQuery || ALL_CARS_QUERY;
 
