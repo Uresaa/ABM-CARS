@@ -1,3 +1,5 @@
+import { calculateSellingPrice } from "./car-price.mjs";
+
 const carListFields = [
   "Id",
   "Manufacturer",
@@ -21,6 +23,8 @@ export function createCarListItem(
   for (const field of carListFields) {
     carListItem[field] = car[field];
   }
+
+  carListItem.SellingPrice = calculateSellingPrice(car.Price);
 
   carListItem.KoreaTotalKrw = koreaTotalKrw;
 

@@ -201,7 +201,9 @@
   justify-content: center;
   background: colors.$primary-color;
   color: white;
+  border: 0;
   border-radius: 10px;
+  cursor: pointer;
   text-decoration: none;
   font-family: fonts.$font-heading;
   font-weight: fonts.$semibold;
