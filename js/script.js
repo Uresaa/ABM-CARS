@@ -13,6 +13,38 @@ const carsLoadMore = document.querySelector("#cars-load-more");
 let totalCars = 0;
 let loadingCars = false;
 
+const EUR_PER_KRW = 0.0006134351235;
+
+const kosovoDeliveryFees = [
+  { maxPrice: 15000, fee: 2300 },
+  { maxPrice: 17000, fee: 2000 },
+  { maxPrice: 20000, fee: 1900 },
+  { maxPrice: 30000, fee: 1800 },
+  { maxPrice: 40000, fee: 1600 },
+  { maxPrice: 50000, fee: 1400 },
+  { maxPrice: Infinity, fee: 1200 },
+];
+
+function calculateKosovoPrice(priceKrw) {
+  if (!priceKrw) return null;
+
+  const carPriceEur = priceKrw * EUR_PER_KRW;
+  const transportEur = kosovoDeliveryFees.find(
+    ({ maxPrice }) => carPriceEur <= maxPrice,
+  ).fee;
+
+  return carPriceEur + transportEur;
+}
+
+function formatKosovoPrice(priceKrw) {
+  const price = calculateKosovoPrice(priceKrw);
+  return price
+    ? `${CarFormat.formatNumber(Math.round(price))} €`
+    : "Çmimi sipas kërkesës";
+}
+
+window.CarPricing = Object.freeze({ calculateKosovoPrice, formatKosovoPrice });
+
 function createCarCard(car) {
   const fragment = carCardTemplate.content.cloneNode(true);
   const card = fragment.querySelector(".car-card");
@@ -32,12 +64,14 @@ function createCarCard(car) {
   fragment.querySelector("[data-car-fuel]").textContent = CarFormat.fuel(
     car.fuelType,
   );
-  console.log("Të dhënat e veturës:", car); // Shto këtë për të kontrolluar pronat në Console (F12)
 
   fragment.querySelector("[data-car-transmission]").textContent =
     CarFormat.transmission(
       car.transmission || car.transmissionName || car.gearbox,
     );
+
+  fragment.querySelector("[data-car-kosovo-price]").textContent =
+    formatKosovoPrice(car.priceKrw);
 
   const callToAction = fragment.querySelector("[data-car-cta]");
   callToAction.dataset.carId = car.id;

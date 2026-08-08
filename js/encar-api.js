@@ -45,6 +45,9 @@ const EncarApi = (() => {
       badge: car.BadgeEnglish || car.Badge,
       year: car.FormYear,
       mileage: Number(car.Mileage) || 0,
+
+      // Totali në Kore: çmimi i shitjes, taksa e blerjes dhe tarifat e transferimit.
+      priceKrw: Number(car.KoreaTotalKrw) || 0,
       fuelType: car.FuelType,
       transmission: car.Transmission,
       photoUrl: photoPath

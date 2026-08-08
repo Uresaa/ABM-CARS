@@ -228,7 +228,6 @@
     padding: 28px;
   }
 
-  /* Këtu kalon në 2 kolona që në 1200px që të ketë vend boll */
   .hero__search .search__grid,
   .hero__search .search__filters-extra {
     grid-template-columns: repeat(2, 1fr);
@@ -303,9 +302,6 @@
     max-width: 100%;
   }
 }
-/* =======================================
-   MOBILE
-======================================= */
 
 @media (max-width: 800px) {
   .hero {
@@ -371,10 +367,6 @@
     width: 100%;
   }
 }
-
-/* =======================================
-   SMALL MOBILE
-======================================= */
 
 @media (max-width: 480px) {
   .hero {

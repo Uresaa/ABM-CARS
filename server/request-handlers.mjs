@@ -1,5 +1,6 @@
 import {
   loadAvailableReports,
+  requestCarAcquisitionCost,
   requestCarDetails,
   requestCarImage,
   requestCarList,
@@ -15,8 +16,18 @@ import { sendJson } from "./http-response.mjs";
 async function loadCarListItem(car) {
   const cached = getCachedCategory(car.Id);
 
-  if (cached && typeof cached === "object" && "transmission" in cached) {
-    return createCarListItem(car, cached.category, cached.transmission);
+  if (
+    cached &&
+    typeof cached === "object" &&
+    "transmission" in cached &&
+    "koreaTotalKrw" in cached
+  ) {
+    return createCarListItem(
+      car,
+      cached.category,
+      cached.transmission,
+      cached.koreaTotalKrw,
+    );
   }
 
   try {
@@ -26,9 +37,10 @@ async function loadCarListItem(car) {
     const detail = await response.json();
     const category = detail.category || {};
     const transmission = detail.spec?.transmissionName || "";
+    const koreaTotalKrw = await requestCarAcquisitionCost(detail);
 
-    setCachedCategory(car.Id, { category, transmission });
-    return createCarListItem(car, category, transmission);
+    setCachedCategory(car.Id, { category, transmission, koreaTotalKrw });
+    return createCarListItem(car, category, transmission, koreaTotalKrw);
   } catch {
     return createCarListItem(car);
   }
@@ -63,9 +75,17 @@ export async function handleCarDetailRequest(carId, response) {
   }
 
   const car = await encarResponse.json();
-  const reports = await loadAvailableReports(car);
+  const [reports, koreaTotalKrw] = await Promise.all([
+    loadAvailableReports(car),
+    requestCarAcquisitionCost(car),
+  ]);
   const report = createReportSummary(reports);
-  const carDetails = createCarDetailsResponse(carId, car, report);
+  const carDetails = createCarDetailsResponse(
+    carId,
+    car,
+    report,
+    koreaTotalKrw,
+  );
 
   sendJson(response, 200, carDetails);
 }

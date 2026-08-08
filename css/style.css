@@ -1,4 +1,3 @@
-@charset "UTF-8";
 .header {
   position: fixed;
   inset: 0 0 auto 0;
@@ -349,7 +348,6 @@
     max-width: 560px;
     padding: 28px;
   }
-  /* Këtu kalon në 2 kolona që në 1200px që të ketë vend boll */
   .hero__search .search__grid,
   .hero__search .search__filters-extra {
     grid-template-columns: repeat(2, 1fr);
@@ -413,9 +411,6 @@
     max-width: 100%;
   }
 }
-/* =======================================
-   MOBILE
-======================================= */
 @media (max-width: 800px) {
   .hero {
     padding: 110px 0 70px;
@@ -470,9 +465,6 @@
     width: 100%;
   }
 }
-/* =======================================
-   SMALL MOBILE
-======================================= */
 @media (max-width: 480px) {
   .hero {
     padding: 95px 0 55px;
@@ -880,6 +872,24 @@
   border-radius: 6px;
   font-family: "Figtree", sans-serif;
   font-size: 12px;
+}
+
+.car-card__price {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 22px;
+  color: #8a94a6;
+  font-family: "Figtree", sans-serif;
+  font-size: 13px;
+}
+
+.car-card__price strong {
+  color: #ee7135;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 24px;
+  line-height: 1;
 }
 
 .car-card__cta {

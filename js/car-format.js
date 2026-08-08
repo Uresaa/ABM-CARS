@@ -74,7 +74,15 @@ const CarFormat = (() => {
     return bodyNames[value] || value || "—";
   }
 
-  return Object.freeze({ formatNumber, manufacturer, model, fuel, transmission, color, body });
+  return Object.freeze({
+    formatNumber,
+    manufacturer,
+    model,
+    fuel,
+    transmission,
+    color,
+    body,
+  });
 })();
 
 window.CarFormat = CarFormat;

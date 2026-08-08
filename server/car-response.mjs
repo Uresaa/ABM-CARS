@@ -10,12 +10,19 @@ const carListFields = [
   "Photos",
 ];
 
-export function createCarListItem(car, category = null, transmission = null) {
+export function createCarListItem(
+  car,
+  category = null,
+  transmission = null,
+  koreaTotalKrw = 0,
+) {
   const carListItem = {};
 
   for (const field of carListFields) {
     carListItem[field] = car[field];
   }
+
+  carListItem.KoreaTotalKrw = koreaTotalKrw;
 
   if (category) {
     carListItem.ManufacturerEnglish = category.manufacturerEnglishName;
@@ -113,7 +120,7 @@ export function createReportSummary(reports) {
   };
 }
 
-export function createCarDetailsResponse(carId, car, report) {
+export function createCarDetailsResponse(carId, car, report, koreaTotalKrw = 0) {
   const category = car.category || {};
   const spec = car.spec || {};
 
@@ -139,6 +146,7 @@ export function createCarDetailsResponse(carId, car, report) {
     inspectionAvailable: (car.condition?.inspection?.formats?.length || 0) > 0,
     seizingCount: Number(car.condition?.seizing?.seizingCount) || 0,
     pledgeCount: Number(car.condition?.seizing?.pledgeCount) || 0,
+    koreaTotalKrw,
     report,
     photos: Array.isArray(car.photos)
       ? car.photos

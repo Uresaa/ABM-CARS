@@ -189,6 +189,23 @@ main.container {
   text-align: right;
 }
 
+.summary-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 22px;
+  color: #afbdd0;
+  font-size: 13px;
+}
+
+.summary-price strong {
+  color: colors.$orange-color;
+  font-family: fonts.$font-heading;
+  font-size: 28px;
+  line-height: 1;
+}
+
 .offer-button {
   width: 100%;
   padding: 15px;

@@ -275,6 +275,24 @@
   font-size: 12px;
 }
 
+.car-card__price {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 22px;
+  color: colors.$text-color;
+  font-family: fonts.$font-body;
+  font-size: 13px;
+}
+
+.car-card__price strong {
+  color: colors.$orange-color;
+  font-family: fonts.$font-heading;
+  font-size: 24px;
+  line-height: 1;
+}
+
 .car-card__cta {
   display: flex;
   align-items: center;

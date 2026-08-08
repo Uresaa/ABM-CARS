@@ -1,6 +1,7 @@
 const encarListUrl = "https://api.encar.com/search/car/list/general";
 const encarReadsideUrl = "https://api.encar.com/v1/readside";
 const encarDetailUrl = `${encarReadsideUrl}/vehicle`;
+const encarCalculatorUrl = "https://www.encar.com/dc/dc_carsearchpop.do";
 const encarImageUrl = "https://ci.encar.com";
 
 const requestHeaders = {
@@ -29,6 +30,36 @@ export function requestCarList(searchParameters) {
 
 export function requestCarDetails(carId, { timeoutMs = 15000 } = {}) {
   return requestEncar(`${encarDetailUrl}/${carId}`, { timeoutMs });
+}
+
+export async function requestCarAcquisitionCost(car, { timeoutMs = 10000 } = {}) {
+  const vehicleId = Number(car.vehicleId);
+  if (!vehicleId) return 0;
+
+  const url = new URL(encarCalculatorUrl);
+  url.search = new URLSearchParams({
+    method: "getCarCalcJson",
+    carid: String(vehicleId),
+    isLease: "",
+    isBuyback: "",
+    carType: "dc",
+    aqprice: String(car.advertisement?.price || ""),
+    regist: "0",
+    carTypeCode: "",
+    purpose: "",
+    isHomeService: "",
+    advertisementType: car.advertisement?.advertisementType || "",
+    encarServiceType: "",
+    centerCode: "",
+  }).toString();
+
+  const response = await requestEncar(url, { timeoutMs });
+  if (!response.ok) return 0;
+
+  const data = JSON.parse(
+    new TextDecoder("euc-kr").decode(await response.arrayBuffer()),
+  );
+  return Number(data?.[0]?.acquisition?.totalPrice) || 0;
 }
 
 async function requestOptionalReport(path) {
