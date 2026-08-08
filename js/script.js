@@ -12,6 +12,7 @@ const carsLoadMore = document.querySelector("#cars-load-more");
 
 let totalCars = 0;
 let loadingCars = false;
+let showingTrendingCars = false;
 
 const EUR_PER_KRW = 0.0006134351235;
 
@@ -115,7 +116,9 @@ function updateCarsState() {
   carsStatus.textContent = renderedCars
     ? `Po shfaqen ${CarFormat.formatNumber(renderedCars)} vetura`
     : "Nuk u gjet asnjë veturë.";
-  carsCount.textContent = `${CarFormat.formatNumber(totalCars)} vetura u gjetën`;
+  carsCount.textContent = showingTrendingCars
+    ? "Veturat më të kërkuara"
+    : `${CarFormat.formatNumber(totalCars)} vetura u gjetën`;
   carsLoadMore.hidden = renderedCars === 0 || renderedCars >= totalCars;
 }
 
@@ -123,6 +126,7 @@ async function loadInitialCars() {
   try {
     const result = await window.encarCarsRequest;
     totalCars = result.total;
+    showingTrendingCars = Boolean(result.isTrending);
     appendCars(result.cars);
     updateCarsState();
   } catch (error) {
@@ -142,9 +146,13 @@ async function loadMoreCars() {
   carsLoadMore.textContent = "Duke ngarkuar...";
 
   try {
-    const result = await window.EncarApi.searchCars({
-      offset: carsGrid.children.length,
-    });
+    const result = showingTrendingCars
+      ? await window.EncarApi.searchTrendingCars({
+          offset: carsGrid.children.length,
+        })
+      : await window.EncarApi.searchCars({
+          offset: carsGrid.children.length,
+        });
     totalCars = result.total;
     appendCars(result.cars);
     updateCarsState();

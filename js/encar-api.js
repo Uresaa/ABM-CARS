@@ -3,6 +3,11 @@ const EncarApi = (() => {
   const IMAGE_URL = "/api/car-image?path=";
   const DETAIL_URL = "./car-details.html?id=";
   const ALL_CARS_QUERY = "(And.Hidden.N._.CarType.Y.)";
+  const TRENDING_MANUFACTURERS = ["BMW", "\uBCA4\uCE20", "\uC544\uC6B0\uB514"];
+
+  function manufacturerQuery(manufacturer) {
+    return `(And.Hidden.N._.(C.CarType.N._.Manufacturer.${manufacturer}.))`;
+  }
 
   async function searchCars({
     offset = 0,
@@ -35,6 +40,31 @@ const EncarApi = (() => {
     };
   }
 
+  async function searchTrendingCars({
+    offset = 0,
+    carsPerManufacturer = 4,
+  } = {}) {
+    const carsOffset = Math.floor(offset / TRENDING_MANUFACTURERS.length);
+    const limit = carsPerManufacturer * TRENDING_MANUFACTURERS.length;
+    const results = await Promise.all(
+      TRENDING_MANUFACTURERS.map((manufacturer) =>
+        searchCars({
+          offset: carsOffset,
+          limit: carsPerManufacturer,
+          query: manufacturerQuery(manufacturer),
+        }),
+      ),
+    );
+
+    return {
+      total: results.reduce((count, result) => count + result.total, 0),
+      offset,
+      limit,
+      isTrending: true,
+      cars: results.flatMap((result) => result.cars),
+    };
+  }
+
   function normalizeCar(car) {
     const photoPath = car.Photos?.[0]?.location ?? null;
 
@@ -57,8 +87,8 @@ const EncarApi = (() => {
     };
   }
 
-  return Object.freeze({ searchCars });
+  return Object.freeze({ searchCars, searchTrendingCars });
 })();
 
 window.EncarApi = EncarApi;
-window.encarCarsRequest = EncarApi.searchCars();
+window.encarCarsRequest = EncarApi.searchTrendingCars();
