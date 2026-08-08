@@ -11,6 +11,7 @@ import {
   createReportSummary,
 } from "./car-response.mjs";
 import { getCachedCategory, setCachedCategory } from "./car-cache.mjs";
+import { getCachedSearch, setCachedSearch } from "./search-cache.mjs";
 import { sendJson } from "./http-response.mjs";
 
 async function loadCarListItem(car) {
@@ -47,6 +48,14 @@ async function loadCarListItem(car) {
 }
 
 export async function handleCarListRequest(url, response) {
+  const cacheKey = url.search;
+  const cached = getCachedSearch(cacheKey);
+
+  if (cached) {
+    sendJson(response, 200, cached);
+    return;
+  }
+
   const encarResponse = await requestCarList(url.searchParams);
 
   if (!encarResponse.ok) {
@@ -61,6 +70,7 @@ export async function handleCarListRequest(url, response) {
     ? await Promise.all(data.SearchResults.map(loadCarListItem))
     : [];
 
+  setCachedSearch(cacheKey, data);
   sendJson(response, 200, data);
 }
 

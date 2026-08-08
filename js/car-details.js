@@ -247,6 +247,7 @@ function renderCar(car) {
     manufacturer: car.manufacturer,
     model: car.model,
     year: car.year,
+    kosovoPrice: CarFormat.formatPrice(car.sellingPriceEur),
     mileage: `${formatNumber(car.mileage)} km`,
     fuel: CarFormat.fuel(car.fuelType),
     engine: car.displacementCc ? `${formatNumber(car.displacementCc)} cc` : "—",

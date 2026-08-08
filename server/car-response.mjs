@@ -150,6 +150,7 @@ export function createCarDetailsResponse(carId, car, report, koreaTotalKrw = 0) 
     inspectionAvailable: (car.condition?.inspection?.formats?.length || 0) > 0,
     seizingCount: Number(car.condition?.seizing?.seizingCount) || 0,
     pledgeCount: Number(car.condition?.seizing?.pledgeCount) || 0,
+    sellingPriceEur: calculateSellingPrice(car.advertisement?.price),
     koreaTotalKrw,
     report,
     photos: Array.isArray(car.photos)

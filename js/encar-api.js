@@ -5,10 +5,11 @@ const EncarApi = (() => {
   const IMAGE_URL = "/api/car-image?path=";
   const DETAIL_URL = "./car-details.html?id=";
   const NAVIGATION = "|Metadata|Sort";
+  let requestQueue = Promise.resolve();
 
   // ---- Low-level request, shared by car search and filter loading ----
 
-  async function requestSearchData({
+  async function sendSearchRequest({
     offset = 0,
     limit = 12,
     query = ALL_CARS_QUERY,
@@ -32,6 +33,13 @@ const EncarApi = (() => {
     }
 
     return carsResponse.json();
+  }
+
+  function requestSearchData(options) {
+    const request = requestQueue.then(() => sendSearchRequest(options));
+
+    requestQueue = request.catch(() => undefined);
+    return request;
   }
 
   // ---- Car search ----
@@ -83,7 +91,7 @@ const EncarApi = (() => {
   } = {}) {
     const carsOffset = Math.floor(offset / TRENDING_MANUFACTURERS.length);
     const limit = carsPerManufacturer * TRENDING_MANUFACTURERS.length;
-    const results = await Promise.all(
+    const outcomes = await Promise.allSettled(
       TRENDING_MANUFACTURERS.map((manufacturer) =>
         searchCars({
           offset: carsOffset,
@@ -92,6 +100,18 @@ const EncarApi = (() => {
         }),
       ),
     );
+
+    outcomes
+      .filter((outcome) => outcome.status === "rejected")
+      .forEach((outcome) => console.error(outcome.reason));
+
+    const results = outcomes
+      .filter((outcome) => outcome.status === "fulfilled")
+      .map((outcome) => outcome.value);
+
+    if (!results.length) {
+      throw new Error("All trending car searches failed");
+    }
 
     return {
       total: results.reduce((count, result) => count + result.total, 0),
