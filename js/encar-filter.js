@@ -1,6 +1,6 @@
 const EncarFilter = (() => {
   const ALL_CARS_QUERY = "(And.Hidden.N.)";
-  const WON_PER_EUR = 1698.46;
+  const EUR_PER_KRW = 0.0006134351235;
 
   function readFilterOptions(filterData, filterName) {
     const pending = [filterData];
@@ -37,7 +37,7 @@ const EncarFilter = (() => {
   }
 
   function euroToEncarPriceUnit(priceEur) {
-    return priceEur ? Math.round((priceEur * WON_PER_EUR) / 10000) : "";
+    return priceEur ? Math.round(priceEur / EUR_PER_KRW / 10000) : "";
   }
 
   function buildQuery({

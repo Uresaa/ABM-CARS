@@ -46,9 +46,29 @@ const EncarApi = (() => {
 
   // BMW, Mercedes-Benz, Audi
   const TRENDING_MANUFACTURERS = ["BMW", "벤츠", "아우디"];
+  const TRENDING_MANUFACTURER_LABELS = [
+    "BMW",
+    "Mercedes-Benz",
+    "Audi",
+    "Volkswagen",
+    "Toyota",
+    "Porsche",
+  ];
 
   function manufacturerQuery(manufacturer) {
     return `(And.Hidden.N._.(C.CarType.N._.Manufacturer.${manufacturer}.))`;
+  }
+
+  function compareManufacturers(first, second) {
+    const firstRank = TRENDING_MANUFACTURER_LABELS.indexOf(first.label);
+    const secondRank = TRENDING_MANUFACTURER_LABELS.indexOf(second.label);
+
+    if (firstRank !== -1 || secondRank !== -1) {
+      return (firstRank === -1 ? Infinity : firstRank) -
+        (secondRank === -1 ? Infinity : secondRank);
+    }
+
+    return first.label.localeCompare(second.label, "en");
   }
 
   function normalizeCar(car) {
@@ -147,11 +167,7 @@ const EncarApi = (() => {
       manufacturerRequest = Promise.all([
         requestFilterOptions(DOMESTIC_CARS_QUERY, "Manufacturer"),
         requestFilterOptions(IMPORTED_CARS_QUERY, "Manufacturer"),
-      ]).then((groups) =>
-        groups
-          .flat()
-          .sort((first, second) => first.label.localeCompare(second.label, "en")),
-      );
+      ]).then((groups) => groups.flat().sort(compareManufacturers));
     }
 
     return manufacturerRequest;

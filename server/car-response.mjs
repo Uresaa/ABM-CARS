@@ -1,4 +1,4 @@
-import { calculateSellingPrice } from "./car-price.mjs";
+import { calculateKosovoPrice } from "./car-price.mjs";
 
 const carListFields = [
   "Id",
@@ -24,7 +24,7 @@ export function createCarListItem(
     carListItem[field] = car[field];
   }
 
-  carListItem.SellingPrice = calculateSellingPrice(car.Price);
+  carListItem.SellingPrice = calculateKosovoPrice(koreaTotalKrw);
 
   carListItem.KoreaTotalKrw = koreaTotalKrw;
 
@@ -150,7 +150,7 @@ export function createCarDetailsResponse(carId, car, report, koreaTotalKrw = 0) 
     inspectionAvailable: (car.condition?.inspection?.formats?.length || 0) > 0,
     seizingCount: Number(car.condition?.seizing?.seizingCount) || 0,
     pledgeCount: Number(car.condition?.seizing?.pledgeCount) || 0,
-    sellingPriceEur: calculateSellingPrice(car.advertisement?.price),
+    sellingPriceEur: calculateKosovoPrice(koreaTotalKrw),
     koreaTotalKrw,
     report,
     photos: Array.isArray(car.photos)
