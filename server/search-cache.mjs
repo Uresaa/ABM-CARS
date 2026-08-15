@@ -1,5 +1,6 @@
 const CACHE_TTL_MS = 60 * 1000;
 const cache = new Map();
+const pending = new Map();
 
 export function getCachedSearch(key) {
   const entry = cache.get(key);
@@ -15,4 +16,18 @@ export function getCachedSearch(key) {
 
 export function setCachedSearch(key, data) {
   cache.set(key, { data, cachedAt: Date.now() });
+}
+
+export function getPendingSearch(key) {
+  return pending.get(key) || null;
+}
+
+export function setPendingSearch(key, request) {
+  pending.set(key, request);
+
+  request.finally(() => {
+    if (pending.get(key) === request) pending.delete(key);
+  }).catch(() => {});
+
+  return request;
 }

@@ -10,9 +10,46 @@ import {
   createCarListItem,
   createReportSummary,
 } from "./car-response.mjs";
-import { getCachedCategory, setCachedCategory } from "./car-cache.mjs";
-import { getCachedSearch, setCachedSearch } from "./search-cache.mjs";
+import {
+  getCachedCategory,
+  getPendingCategory,
+  setCachedCategory,
+  setPendingCategory,
+} from "./car-cache.mjs";
+import {
+  getCachedSearch,
+  getPendingSearch,
+  setCachedSearch,
+  setPendingSearch,
+} from "./search-cache.mjs";
 import { sendJson } from "./http-response.mjs";
+
+const MAX_CONCURRENT_LIST_ENRICHMENTS = 3;
+let activeListEnrichments = 0;
+const listEnrichmentQueue = [];
+
+function enqueueListEnrichment(task) {
+  return new Promise((resolve, reject) => {
+    listEnrichmentQueue.push({ task, resolve, reject });
+    runNextListEnrichment();
+  });
+}
+
+function runNextListEnrichment() {
+  if (activeListEnrichments >= MAX_CONCURRENT_LIST_ENRICHMENTS) return;
+
+  const queued = listEnrichmentQueue.shift();
+  if (!queued) return;
+
+  activeListEnrichments += 1;
+  Promise.resolve()
+    .then(queued.task)
+    .then(queued.resolve, queued.reject)
+    .finally(() => {
+      activeListEnrichments -= 1;
+      runNextListEnrichment();
+    });
+}
 
 async function loadCarListItem(car) {
   const cached = getCachedCategory(car.Id);
@@ -31,20 +68,59 @@ async function loadCarListItem(car) {
     );
   }
 
-  try {
-    const response = await requestCarDetails(car.Id, { timeoutMs: 8000 });
-    if (!response.ok) return createCarListItem(car);
+  const pending = getPendingCategory(car.Id);
+  if (pending) return pending;
 
-    const detail = await response.json();
-    const category = detail.category || {};
-    const transmission = detail.spec?.transmissionName || "";
-    const koreaTotalKrw = await requestCarAcquisitionCost(detail);
+  return setPendingCategory(
+    car.Id,
+    (async () => {
+      try {
+        const response = await requestCarDetails(car.Id, { timeoutMs: 8000 });
+        if (!response.ok) return createCarListItem(car);
 
-    setCachedCategory(car.Id, { category, transmission, koreaTotalKrw });
-    return createCarListItem(car, category, transmission, koreaTotalKrw);
-  } catch {
-    return createCarListItem(car);
+        const detail = await response.json();
+        const category = detail.category || {};
+        const transmission = detail.spec?.transmissionName || "";
+        const koreaTotalKrw = await requestCarAcquisitionCost(detail);
+
+        setCachedCategory(car.Id, { category, transmission, koreaTotalKrw });
+        return createCarListItem(car, category, transmission, koreaTotalKrw);
+      } catch {
+        return createCarListItem(car);
+      }
+    })(),
+  );
+}
+
+async function loadCarList(searchParameters) {
+  const encarResponse = await requestCarList(searchParameters);
+
+  if (!encarResponse.ok) {
+    const error = new Error("Cars could not be loaded");
+    error.statusCode = encarResponse.status;
+    throw error;
   }
+
+  const data = await encarResponse.json();
+  const uniqueCars = Array.isArray(data.SearchResults)
+    ? Array.from(
+        new Map(
+          data.SearchResults
+            .filter((car) => car?.Id)
+            .map((car) => [String(car.Id), car]),
+        ).values(),
+      )
+    : [];
+
+  data.SearchResults = uniqueCars.length
+    ? await Promise.all(
+        uniqueCars.map((car) =>
+          enqueueListEnrichment(() => loadCarListItem(car)),
+        ),
+      )
+    : [];
+
+  return data;
 }
 
 export async function handleCarListRequest(url, response) {
@@ -56,22 +132,29 @@ export async function handleCarListRequest(url, response) {
     return;
   }
 
-  const encarResponse = await requestCarList(url.searchParams);
-
-  if (!encarResponse.ok) {
-    sendJson(response, encarResponse.status, {
-      error: "Cars could not be loaded",
-    });
+  const pending = getPendingSearch(cacheKey);
+  if (pending) {
+    try {
+      sendJson(response, 200, await pending);
+    } catch (error) {
+      sendJson(response, error.statusCode || 502, {
+        error: "Cars could not be loaded",
+      });
+    }
     return;
   }
 
-  const data = await encarResponse.json();
-  data.SearchResults = Array.isArray(data.SearchResults)
-    ? await Promise.all(data.SearchResults.map(loadCarListItem))
-    : [];
+  const request = setPendingSearch(cacheKey, loadCarList(url.searchParams));
 
-  setCachedSearch(cacheKey, data);
-  sendJson(response, 200, data);
+  try {
+    const data = await request;
+    setCachedSearch(cacheKey, data);
+    sendJson(response, 200, data);
+  } catch (error) {
+    sendJson(response, error.statusCode || 502, {
+      error: "Cars could not be loaded",
+    });
+  }
 }
 
 export async function handleCarDetailRequest(carId, response) {

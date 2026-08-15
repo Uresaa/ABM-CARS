@@ -10,6 +10,8 @@
     #showingTrending = false;
     #activeQuery = null;
     #requestVersion = 0;
+    #renderedCarIds = new Set();
+    #nextOffset = 0;
 
     constructor({ template, grid, status, count, loadMoreButton }) {
       this.#template = template;
@@ -87,6 +89,10 @@
       const fragment = document.createDocumentFragment();
 
       cars.forEach((car) => {
+        const carId = String(car.id || "");
+        if (!carId || this.#renderedCarIds.has(carId)) return;
+
+        this.#renderedCarIds.add(carId);
         fragment.append(this.#createCard(car));
       });
 
@@ -115,6 +121,7 @@
 
         this.#totalCars = result.total;
         this.#showingTrending = Boolean(result.isTrending);
+        this.#nextOffset = result.offset + result.limit;
         this.render(result.cars);
         this.#updateState();
       } catch (error) {
@@ -132,6 +139,8 @@
 
       this.#activeQuery = query;
       this.#showingTrending = false;
+      this.#renderedCarIds.clear();
+      this.#nextOffset = 0;
       this.#grid.replaceChildren();
       this.#status.textContent = "Duke kërkuar veturat...";
       this.#count.textContent = "";
@@ -142,6 +151,7 @@
         if (!this.#isCurrent(requestVersion)) return;
 
         this.#totalCars = result.total;
+        this.#nextOffset = result.offset + result.limit;
         this.render(result.cars);
         this.#updateState();
       } catch (error) {
@@ -163,15 +173,16 @@
       try {
         const result = this.#showingTrending
           ? await window.EncarApi.searchTrendingCars({
-              offset: this.#grid.children.length,
+              offset: this.#nextOffset,
             })
           : await window.EncarApi.searchCars({
-              offset: this.#grid.children.length,
+              offset: this.#nextOffset,
               query: this.#activeQuery || undefined,
             });
         if (!this.#isCurrent(requestVersion)) return;
 
         this.#totalCars = result.total;
+        this.#nextOffset = result.offset + result.limit;
         this.render(result.cars);
         this.#updateState();
       } catch (error) {
