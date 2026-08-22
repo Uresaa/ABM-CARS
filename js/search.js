@@ -129,7 +129,7 @@
     return !invalid;
   }
 
-  function searchCars() {
+  function runSearch({ scroll = false } = {}) {
     if (!validMileageRange()) return;
 
     const [priceFromEur = "", priceToEur = ""] =
@@ -169,12 +169,32 @@
         },
       }),
     );
-    document.querySelector("#cars").scrollIntoView({ behavior: "smooth" });
+
+    if (scroll) {
+      document.querySelector("#cars").scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  function searchCars() {
+    runSearch({ scroll: true });
+  }
+
+  function handleFilterChange() {
+    runSearch();
   }
 
   filters.brand.addEventListener("change", loadModels);
+  filters.brand.addEventListener("change", handleFilterChange);
   filters.model.addEventListener("change", loadVariants);
+  filters.model.addEventListener("change", handleFilterChange);
+  filters.vehicleType.addEventListener("change", handleFilterChange);
+  filters.transmission.addEventListener("change", handleFilterChange);
+  filters.fuel.addEventListener("change", handleFilterChange);
+  filters.yearFrom.addEventListener("change", handleFilterChange);
   filters.mileageFrom.addEventListener("change", updateMileageMaximums);
+  filters.mileageFrom.addEventListener("change", handleFilterChange);
+  filters.mileageTo.addEventListener("change", handleFilterChange);
+  filters.price.addEventListener("change", handleFilterChange);
   searchButton.addEventListener("click", searchCars);
   loadManufacturers();
 })();
