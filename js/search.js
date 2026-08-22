@@ -1,7 +1,8 @@
-(() => {
+﻿(() => {
   const filters = {
     brand: document.querySelector("#brand"),
     model: document.querySelector("#model"),
+    vehicleType: document.querySelector("#vehicle-type"),
     transmission: document.querySelector("#transmission"),
     fuel: document.querySelector("#fuel"),
     yearFrom: document.querySelector("#year-from"),
@@ -57,6 +58,47 @@
     }
   }
 
+  function formatTypeLabel(label) {
+    const translations = [
+      ["어드밴티지", "Advantage"],
+      ["스포츠", "Sport"],
+      ["프리미엄", "Premium"],
+      ["럭셔리", "Luxury"],
+      ["모던", "Modern"],
+      ["익스클루시브", "Exclusive"],
+      ["인스퍼레이션", "Inspiration"],
+      ["디젤", "Diesel"],
+      ["가솔린", "Benzinë"],
+      ["전기", "Elektrik"],
+      ["하이브리드", "Hibrid"],
+    ];
+
+    const formatted = translations.reduce(
+      (value, [korean, translated]) => value.replaceAll(korean, translated),
+      label,
+    );
+
+    return formatted.replace(/[가-힣]+/g, "").replace(/\s{2,}/g, " ").trim() || "Tip i veçantë";
+  }
+
+  async function loadVariants() {
+    const modelQuery = filters.model.value;
+    replaceOptions(filters.vehicleType, "Zgjidh tipin");
+    filters.vehicleType.disabled = true;
+    if (!modelQuery) return;
+
+    replaceOptions(filters.vehicleType, "Duke ngarkuar tipet...");
+    try {
+      const variants = await window.EncarApi.loadVariants(modelQuery);
+      if (modelQuery !== filters.model.value) return;
+      replaceOptions(filters.vehicleType, "Çdo tip", variants.map((variant) => ({ ...variant, label: formatTypeLabel(variant.label) })));
+      filters.vehicleType.disabled = false;
+    } catch (error) {
+      if (modelQuery !== filters.model.value) return;
+      replaceOptions(filters.vehicleType, "Tipet nuk mund të ngarkohen");
+    }
+  }
+
   function updateMileageMaximums() {
     const minimum = Number(filters.mileageFrom.value);
 
@@ -92,8 +134,8 @@
 
     const [priceFromEur = "", priceToEur = ""] =
       filters.price.value.split(":");
-    const query = window.EncarApi.buildSearchQuery({
-      categoryQuery: filters.model.value || filters.brand.value,
+    const searchOptions = {
+      categoryQuery: filters.vehicleType.value || filters.model.value || filters.brand.value,
       transmission: filters.transmission.value,
       fuel: filters.fuel.value,
       yearFrom: filters.yearFrom.value,
@@ -101,15 +143,37 @@
       mileageTo: filters.mileageTo.value,
       priceFromEur,
       priceToEur,
-    });
+    };
+    const selectedYear = Number(filters.yearFrom.value) || null;
+    const query = window.EncarApi.buildSearchQuery(searchOptions);
+    const exactYearQuery = selectedYear
+      ? window.EncarApi.buildSearchQuery({
+          ...searchOptions,
+          yearTo: selectedYear,
+        })
+      : null;
+    const laterYearQuery = selectedYear
+      ? window.EncarApi.buildSearchQuery({
+          ...searchOptions,
+          yearFrom: selectedYear + 1,
+        })
+      : null;
 
     window.dispatchEvent(
-      new CustomEvent("cars:search", { detail: { query } }),
+      new CustomEvent("cars:search", {
+        detail: {
+          query,
+          yearFrom: selectedYear,
+          exactYearQuery,
+          laterYearQuery,
+        },
+      }),
     );
     document.querySelector("#cars").scrollIntoView({ behavior: "smooth" });
   }
 
   filters.brand.addEventListener("change", loadModels);
+  filters.model.addEventListener("change", loadVariants);
   filters.mileageFrom.addEventListener("change", updateMileageMaximums);
   searchButton.addEventListener("click", searchCars);
   loadManufacturers();

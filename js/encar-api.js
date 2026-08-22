@@ -1,4 +1,4 @@
-const EncarApi = (() => {
+﻿const EncarApi = (() => {
   const { ALL_CARS_QUERY, buildQuery, readFilterOptions } = window.EncarFilter;
 
   const LIST_URL = "/api/cars";
@@ -116,7 +116,9 @@ const EncarApi = (() => {
         searchCars({
           offset: carsOffset,
           limit: carsPerManufacturer,
-          query: manufacturerQuery(manufacturer),
+          query: buildQuery({
+            categoryQuery: manufacturerQuery(manufacturer),
+          }),
         }),
       ),
     );
@@ -151,6 +153,7 @@ const EncarApi = (() => {
 
   let manufacturerRequest;
   const modelRequests = new Map();
+  const variantRequests = new Map();
 
   async function requestFilterOptions(query, filterName) {
     const data = await requestSearchData({
@@ -184,10 +187,24 @@ const EncarApi = (() => {
     return modelRequests.get(manufacturerQuery);
   }
 
+  function loadVariants(modelGroupQuery) {
+    if (!variantRequests.has(modelGroupQuery)) {
+      variantRequests.set(modelGroupQuery, (async () => {
+        const models = await requestFilterOptions(modelGroupQuery, "Model");
+        const groups = (await Promise.all(models.map(({ query }) => requestFilterOptions(query, "BadgeGroup")))).flat();
+        const badges = (await Promise.all(groups.map(({ query }) => requestFilterOptions(query, "Badge")))).flat();
+        return Array.from(new Map(badges.map((badge) => [badge.query, badge])).values())
+          .sort((first, second) => first.label.localeCompare(second.label));
+      })());
+    }
+    return variantRequests.get(modelGroupQuery);
+  }
+
   return Object.freeze({
     buildSearchQuery: buildQuery,
     loadManufacturers,
     loadModels,
+    loadVariants,
     searchCars,
     searchTrendingCars,
   });

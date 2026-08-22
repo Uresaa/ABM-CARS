@@ -9,8 +9,13 @@
     #loading = false;
     #showingTrending = false;
     #activeQuery = null;
+    #yearFrom = null;
+    #laterYearQuery = null;
+    #showingRequestedYear = false;
     #requestVersion = 0;
     #renderedCarIds = new Set();
+    #renderedCarKeys = new Set();
+    #cars = [];
     #nextOffset = 0;
 
     constructor({ template, grid, status, count, loadMoreButton }) {
@@ -23,7 +28,7 @@
 
     start() {
       window.addEventListener("cars:search", (event) => {
-        this.search(event.detail.query);
+        this.search(event.detail);
       });
       this.#loadMoreButton.addEventListener("click", () => this.loadMore());
       this.#loadInitialCars();
@@ -86,17 +91,57 @@
     }
 
     render(cars) {
-      const fragment = document.createDocumentFragment();
-
       cars.forEach((car) => {
         const carId = String(car.id || "");
-        if (!carId || this.#renderedCarIds.has(carId)) return;
+        const carKey = this.#carKey(car);
+        if (
+          !carId ||
+          this.#renderedCarIds.has(carId) ||
+          this.#renderedCarKeys.has(carKey)
+        ) return;
 
         this.#renderedCarIds.add(carId);
-        fragment.append(this.#createCard(car));
+        this.#renderedCarKeys.add(carKey);
+        this.#cars.push(car);
       });
 
-      this.#grid.append(fragment);
+      const fragment = document.createDocumentFragment();
+      [...this.#cars]
+        .sort((first, second) => this.#compareCars(first, second))
+        .forEach((car) => fragment.append(this.#createCard(car)));
+      this.#grid.replaceChildren(fragment);
+    }
+
+    #carKey(car) {
+      return [
+        car.photoUrl || "",
+        car.manufacturer || "",
+        car.model || "",
+        car.badge || "",
+        car.year || "",
+        car.mileage || "",
+        car.sellingPriceEur || "",
+      ].join("|");
+    }
+
+    #compareCars(first, second) {
+      const firstYear = Number(first.year) || Number.POSITIVE_INFINITY;
+      const secondYear = Number(second.year) || Number.POSITIVE_INFINITY;
+
+      // Keep the requested year first, followed by later years.
+      if (this.#yearFrom && firstYear !== secondYear) {
+        return firstYear - secondYear;
+      }
+
+      const firstPrice = Number.isFinite(Number(first.sellingPriceEur))
+        ? Number(first.sellingPriceEur)
+        : Number.POSITIVE_INFINITY;
+      const secondPrice = Number.isFinite(Number(second.sellingPriceEur))
+        ? Number(second.sellingPriceEur)
+        : Number.POSITIVE_INFINITY;
+
+      if (firstPrice !== secondPrice) return firstPrice - secondPrice;
+      return firstYear - secondYear;
     }
 
     #updateState() {
@@ -108,8 +153,10 @@
       this.#count.textContent = this.#showingTrending
         ? "Veturat më të kërkuara"
         : `${CarFormat.formatNumber(this.#totalCars)} vetura u gjetën`;
-      this.#loadMoreButton.hidden =
-        renderedCars === 0 || renderedCars >= this.#totalCars;
+      const hasMoreCars =
+        (this.#showingRequestedYear && this.#laterYearQuery) ||
+        renderedCars < this.#totalCars;
+      this.#loadMoreButton.hidden = renderedCars === 0 || !hasMoreCars;
     }
 
     async #loadInitialCars() {
@@ -134,12 +181,17 @@
       }
     }
 
-    async search(query) {
+    async search({ query, yearFrom, exactYearQuery, laterYearQuery }) {
       const requestVersion = ++this.#requestVersion;
 
-      this.#activeQuery = query;
+      this.#activeQuery = exactYearQuery || query;
+      this.#yearFrom = yearFrom;
+      this.#laterYearQuery = laterYearQuery;
+      this.#showingRequestedYear = Boolean(exactYearQuery);
       this.#showingTrending = false;
       this.#renderedCarIds.clear();
+      this.#renderedCarKeys.clear();
+      this.#cars = [];
       this.#nextOffset = 0;
       this.#grid.replaceChildren();
       this.#status.textContent = "Duke kërkuar veturat...";
@@ -147,12 +199,26 @@
       this.#loadMoreButton.hidden = true;
 
       try {
-        const result = await window.EncarApi.searchCars({ query });
+        const result = await window.EncarApi.searchCars({ query: this.#activeQuery });
         if (!this.#isCurrent(requestVersion)) return;
 
-        this.#totalCars = result.total;
-        this.#nextOffset = result.offset + result.limit;
-        this.render(result.cars);
+        if (this.#showingRequestedYear && result.total === 0 && this.#laterYearQuery) {
+          const laterResult = await window.EncarApi.searchCars({
+            query: this.#laterYearQuery,
+          });
+          if (!this.#isCurrent(requestVersion)) return;
+
+          this.#activeQuery = this.#laterYearQuery;
+          this.#laterYearQuery = null;
+          this.#showingRequestedYear = false;
+          this.#totalCars = laterResult.total;
+          this.#nextOffset = laterResult.offset + laterResult.limit;
+          this.render(laterResult.cars);
+        } else {
+          this.#totalCars = result.total;
+          this.#nextOffset = result.offset + result.limit;
+          this.render(result.cars);
+        }
         this.#updateState();
       } catch (error) {
         if (!this.#isCurrent(requestVersion)) return;
@@ -171,17 +237,30 @@
       this.#loadMoreButton.textContent = "Duke ngarkuar...";
 
       try {
+        const loadLaterYears =
+          !this.#showingTrending &&
+          this.#showingRequestedYear &&
+          this.#nextOffset >= this.#totalCars;
         const result = this.#showingTrending
           ? await window.EncarApi.searchTrendingCars({
               offset: this.#nextOffset,
             })
           : await window.EncarApi.searchCars({
-              offset: this.#nextOffset,
-              query: this.#activeQuery || undefined,
+              offset: loadLaterYears ? 0 : this.#nextOffset,
+              query: loadLaterYears
+                ? this.#laterYearQuery
+                : this.#activeQuery || undefined,
             });
         if (!this.#isCurrent(requestVersion)) return;
 
-        this.#totalCars = result.total;
+        if (loadLaterYears) {
+          this.#activeQuery = this.#laterYearQuery;
+          this.#laterYearQuery = null;
+          this.#showingRequestedYear = false;
+          this.#totalCars += result.total;
+        } else {
+          this.#totalCars = result.total;
+        }
         this.#nextOffset = result.offset + result.limit;
         this.render(result.cars);
         this.#updateState();

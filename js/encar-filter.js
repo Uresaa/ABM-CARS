@@ -1,5 +1,6 @@
-const EncarFilter = (() => {
+﻿const EncarFilter = (() => {
   const ALL_CARS_QUERY = "(And.Hidden.N.)";
+  const MINIMUM_YEAR = 2016;
   const EUR_PER_KRW = 0.0006134351235;
 
   function readFilterOptions(filterData, filterName) {
@@ -45,15 +46,23 @@ const EncarFilter = (() => {
     fuel,
     transmission,
     yearFrom,
+    yearTo,
     mileageFrom,
     mileageTo,
     priceFromEur,
     priceToEur,
   } = {}) {
+    const minimumYear = Math.max(Number(yearFrom) || MINIMUM_YEAR, MINIMUM_YEAR);
+    const maximumYear = Number(yearTo);
     const conditions = [
+
       fuel && `FuelType.${fuel}.`,
       transmission && `Transmission.${transmission}.`,
-      createRangeCondition("Year", yearFrom && `${yearFrom}00`, ""),
+      createRangeCondition(
+        "Year",
+        `${minimumYear}00`,
+        maximumYear >= minimumYear ? `${maximumYear}99` : "",
+      ),
       createRangeCondition("Mileage", mileageFrom, mileageTo),
       createRangeCondition(
         "Price",
