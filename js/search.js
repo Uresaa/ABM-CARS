@@ -78,7 +78,12 @@
       label,
     );
 
-    return formatted.replace(/[가-힣]+/g, "").replace(/\s{2,}/g, " ").trim() || "Tip i veçantë";
+    return (
+      formatted
+        .replace(/[가-힣]+/g, "")
+        .replace(/\s{2,}/g, " ")
+        .trim() || "Tip i veçantë"
+    );
   }
 
   async function loadVariants() {
@@ -91,7 +96,34 @@
     try {
       const variants = await window.EncarApi.loadVariants(modelQuery);
       if (modelQuery !== filters.model.value) return;
-      replaceOptions(filters.vehicleType, "Çdo tip", variants.map((variant) => ({ ...variant, label: formatTypeLabel(variant.label) })));
+
+      const formattedVariants = variants.map((variant) => ({
+        ...variant,
+        label: formatTypeLabel(variant.label),
+      }));
+
+      const mergedVariants = new Map();
+      formattedVariants.forEach((variant) => {
+        const key = variant.label.toLowerCase();
+        const existing = mergedVariants.get(key);
+        if (!existing) {
+          mergedVariants.set(key, { ...variant });
+          return;
+        }
+        existing.count += variant.count;
+        if (variant.count > (existing.bestCount ?? existing.count)) {
+          existing.bestCount = variant.count;
+          existing.query = variant.query;
+        }
+      });
+
+      // Most-listed trims first, so the popular ones surface at the top.
+      const uniqueVariants = Array.from(mergedVariants.values()).sort(
+        (first, second) =>
+          second.count - first.count || first.label.localeCompare(second.label),
+      );
+
+      replaceOptions(filters.vehicleType, "Çdo tip", uniqueVariants);
       filters.vehicleType.disabled = false;
     } catch (error) {
       if (modelQuery !== filters.model.value) return;
@@ -132,10 +164,10 @@
   function runSearch({ scroll = false } = {}) {
     if (!validMileageRange()) return;
 
-    const [priceFromEur = "", priceToEur = ""] =
-      filters.price.value.split(":");
+    const [priceFromEur = "", priceToEur = ""] = filters.price.value.split(":");
     const searchOptions = {
-      categoryQuery: filters.vehicleType.value || filters.model.value || filters.brand.value,
+      categoryQuery:
+        filters.vehicleType.value || filters.model.value || filters.brand.value,
       transmission: filters.transmission.value,
       fuel: filters.fuel.value,
       yearFrom: filters.yearFrom.value,

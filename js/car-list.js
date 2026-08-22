@@ -75,6 +75,9 @@
         }
       });
 
+      fragment.querySelector("[data-car-accident-badge]").hidden =
+        car.accidentFree !== true;
+
       if (car.photoUrl) {
         image.src = car.photoUrl;
         image.alt = title;

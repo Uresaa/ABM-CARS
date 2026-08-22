@@ -71,14 +71,19 @@ async function requestOptionalReport(path) {
   }
 }
 
+export async function requestAccidentSummary(car) {
+  const vehicleId = Number(car.vehicleId);
+  if (!vehicleId || !car.condition?.accident?.recordView) return null;
+
+  return requestOptionalReport(`/record/vehicle/${vehicleId}/summary`);
+}
+
 export async function loadAvailableReports(car) {
   const vehicleId = Number(car.vehicleId);
   if (!vehicleId) return null;
 
   const [accident, inspection, diagnosis] = await Promise.all([
-    car.condition?.accident?.recordView
-      ? requestOptionalReport(`/record/vehicle/${vehicleId}/summary`)
-      : null,
+    requestAccidentSummary(car),
     car.condition?.inspection?.formats?.length
       ? requestOptionalReport(`/inspection/vehicle/${vehicleId}`)
       : null,

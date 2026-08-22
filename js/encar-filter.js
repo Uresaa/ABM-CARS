@@ -20,6 +20,7 @@
               option.DisplayValue ||
               option.Value,
             query: option.Action,
+            count: Number(option.Count) || 0,
           }));
       }
 

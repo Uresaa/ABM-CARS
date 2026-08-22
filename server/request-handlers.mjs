@@ -1,5 +1,6 @@
 import {
   loadAvailableReports,
+  requestAccidentSummary,
   requestCarAcquisitionCost,
   requestCarDetails,
   requestCarImage,
@@ -9,6 +10,7 @@ import {
   createCarDetailsResponse,
   createCarListItem,
   createReportSummary,
+  evaluateAccidentFree,
 } from "./car-response.mjs";
 import {
   getCachedCategory,
@@ -65,6 +67,7 @@ async function loadCarListItem(car) {
       cached.category,
       cached.transmission,
       cached.koreaTotalKrw,
+      cached.accidentFree,
     );
   }
 
@@ -81,10 +84,25 @@ async function loadCarListItem(car) {
         const detail = await response.json();
         const category = detail.category || {};
         const transmission = detail.spec?.transmissionName || "";
-        const koreaTotalKrw = await requestCarAcquisitionCost(detail);
+        const [koreaTotalKrw, accidentSummary] = await Promise.all([
+          requestCarAcquisitionCost(detail),
+          requestAccidentSummary(detail),
+        ]);
+        const accidentFree = evaluateAccidentFree(accidentSummary);
 
-        setCachedCategory(car.Id, { category, transmission, koreaTotalKrw });
-        return createCarListItem(car, category, transmission, koreaTotalKrw);
+        setCachedCategory(car.Id, {
+          category,
+          transmission,
+          koreaTotalKrw,
+          accidentFree,
+        });
+        return createCarListItem(
+          car,
+          category,
+          transmission,
+          koreaTotalKrw,
+          accidentFree,
+        );
       } catch {
         return createCarListItem(car);
       }

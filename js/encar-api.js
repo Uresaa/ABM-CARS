@@ -71,6 +71,15 @@
     return first.label.localeCompare(second.label, "en");
   }
 
+  // Most-listed options first, so the popular ones surface at the top.
+  function sortByPopularity(options) {
+    return [...options].sort(
+      (first, second) =>
+        (second.count || 0) - (first.count || 0) ||
+        first.label.localeCompare(second.label, "en"),
+    );
+  }
+
   function normalizeCar(car) {
     const photoPath = car.Photos?.[0]?.location ?? null;
 
@@ -85,6 +94,7 @@
         typeof car.SellingPrice === "number" ? car.SellingPrice : null,
       fuelType: car.FuelType,
       transmission: car.Transmission,
+      accidentFree: typeof car.AccidentFree === "boolean" ? car.AccidentFree : null,
       photoUrl: photoPath
         ? `${IMAGE_URL}${encodeURIComponent(photoPath)}`
         : null,
@@ -193,8 +203,9 @@
         const models = await requestFilterOptions(modelGroupQuery, "Model");
         const groups = (await Promise.all(models.map(({ query }) => requestFilterOptions(query, "BadgeGroup")))).flat();
         const badges = (await Promise.all(groups.map(({ query }) => requestFilterOptions(query, "Badge")))).flat();
-        return Array.from(new Map(badges.map((badge) => [badge.query, badge])).values())
-          .sort((first, second) => first.label.localeCompare(second.label));
+        return sortByPopularity(
+          Array.from(new Map(badges.map((badge) => [badge.query, badge])).values()),
+        );
       })());
     }
     return variantRequests.get(modelGroupQuery);

@@ -799,9 +799,27 @@
 }
 
 .car-card__media {
+  position: relative;
   aspect-ratio: 16/10;
   overflow: hidden;
   background: #202733;
+}
+
+.car-card__accident-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  padding: 6px 12px;
+  background: #dc2626;
+  color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .car-card__image,

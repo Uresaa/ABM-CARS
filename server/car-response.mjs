@@ -17,6 +17,7 @@ export function createCarListItem(
   category = null,
   transmission = null,
   koreaTotalKrw = 0,
+  accidentFree = null,
 ) {
   const carListItem = {};
 
@@ -37,6 +38,8 @@ export function createCarListItem(
   if (transmission) {
     carListItem.Transmission = transmission;
   }
+
+  carListItem.AccidentFree = accidentFree;
 
   return carListItem;
 }
@@ -112,6 +115,20 @@ function createBodyDiagnosisSummary(report) {
     allPanelsNormal: abnormalPanels.length === 0,
     panels,
   };
+}
+
+export function evaluateAccidentFree(report) {
+  const accident = createAccidentSummary(report);
+  if (!accident) return null;
+
+  const hasSeriousHistory = [
+    accident.accidentCount,
+    accident.totalLossCount,
+    accident.floodCount,
+    accident.theftCount,
+  ].some((count) => count > 0);
+
+  return !hasSeriousHistory;
 }
 
 export function createReportSummary(reports) {
