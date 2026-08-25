@@ -118,6 +118,9 @@
     gap: 20px;
     margin: 0;
   }
+  .back-link {
+    margin-left: 0;
+  }
 }
 @media (max-width: 576px) {
   .logo img {
