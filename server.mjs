@@ -16,7 +16,10 @@ const server = createServer(async (request, response) => {
       return;
     }
 
-    const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
+    const url = new URL(
+      request.url,
+      `http://${request.headers.host || "localhost"}`,
+    );
     const carDetailMatch = url.pathname.match(/^\/api\/cars\/(\d+)$/);
 
     if (carDetailMatch) {
@@ -34,6 +37,9 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    if (url.pathname === "/") {
+      url.pathname = "/html/index.html";
+    }
     await servePublicFile(url, response);
   } catch (error) {
     const status = error?.code === "ENOENT" ? 404 : 502;
@@ -43,11 +49,14 @@ const server = createServer(async (request, response) => {
     }
 
     sendJson(response, status, {
-      error: status === 404 ? "Not found" : "The upstream service is unavailable",
+      error:
+        status === 404 ? "Not found" : "The upstream service is unavailable",
     });
   }
 });
 
 server.listen(port, () => {
-  console.log(`ABM CARS is running at http://localhost:${port}/html/index.html`);
+  console.log(
+    `ABM CARS is running at http://localhost:${port}/html/index.html`,
+  );
 });
