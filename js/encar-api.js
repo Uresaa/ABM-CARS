@@ -3,7 +3,7 @@
 
   const LIST_URL = "/api/cars";
   const IMAGE_URL = "/api/car-image?path=";
-  const DETAIL_URL = "./car-details.html?id=";
+  const DETAIL_URL = "/html/car-details.html?id=";
   const NAVIGATION = "|Metadata|Sort";
   let requestQueue = Promise.resolve();
 
