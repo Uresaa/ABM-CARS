@@ -296,7 +296,9 @@ function showError() {
 }
 
 async function loadCar() {
-  const carId = new URLSearchParams(location.search).get("id");
+  const carId =
+    location.pathname.match(/^\/car-details\/(\d+)\/?$/)?.[1] ??
+    new URLSearchParams(location.search).get("id");
 
   if (!/^\d+$/.test(carId || "")) {
     showError();

@@ -7,6 +7,9 @@ const projectDirectory = fileURLToPath(new URL("../", import.meta.url));
 const publicDirectories = ["html", "css", "js", "images"].map((directory) =>
   resolve(projectDirectory, directory),
 );
+const publicFiles = ["robots.txt", "sitemap.xml"].map((file) =>
+  resolve(projectDirectory, file),
+);
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -19,12 +22,17 @@ const contentTypes = {
   ".map": "application/json; charset=utf-8",
   ".png": "image/png",
   ".svg": "image/svg+xml",
+  ".txt": "text/plain; charset=utf-8",
   ".webp": "image/webp",
+  ".xml": "application/xml; charset=utf-8",
 };
 
 function isPublicFile(filePath) {
-  return publicDirectories.some(
-    (directory) => filePath === directory || filePath.startsWith(`${directory}${sep}`),
+  return (
+    publicFiles.includes(filePath) ||
+    publicDirectories.some(
+      (directory) => filePath === directory || filePath.startsWith(`${directory}${sep}`),
+    )
   );
 }
 

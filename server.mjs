@@ -27,6 +27,14 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    const carDetailsPageMatch = url.pathname.match(/^\/car-details\/(\d+)\/?$/);
+
+    if (carDetailsPageMatch) {
+      url.pathname = "/html/car-details.html";
+      await servePublicFile(url, response);
+      return;
+    }
+
     if (url.pathname === "/api/cars") {
       await handleCarListRequest(url, response);
       return;
