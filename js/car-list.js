@@ -4,6 +4,7 @@
     #grid;
     #status;
     #count;
+    #totalBadge;
     #loadMoreButton;
     #totalCars = 0;
     #loading = false;
@@ -18,11 +19,12 @@
     #cars = [];
     #nextOffset = 0;
 
-    constructor({ template, grid, status, count, loadMoreButton }) {
+    constructor({ template, grid, status, count, totalBadge, loadMoreButton }) {
       this.#template = template;
       this.#grid = grid;
       this.#status = status;
       this.#count = count;
+      this.#totalBadge = totalBadge;
       this.#loadMoreButton = loadMoreButton;
     }
 
@@ -32,6 +34,7 @@
       });
       this.#loadMoreButton.addEventListener("click", () => this.loadMore());
       this.#loadInitialCars();
+      this.#loadTotalCarsBadge();
     }
 
     #isCurrent(requestVersion) {
@@ -101,7 +104,8 @@
           !carId ||
           this.#renderedCarIds.has(carId) ||
           this.#renderedCarKeys.has(carKey)
-        ) return;
+        )
+          return;
 
         this.#renderedCarIds.add(carId);
         this.#renderedCarKeys.add(carKey);
@@ -162,6 +166,18 @@
       this.#loadMoreButton.hidden = renderedCars === 0 || !hasMoreCars;
     }
 
+    #loadTotalCarsBadge() {
+      window.encarTotalCarsCountRequest
+        .then((total) => {
+          console.log("Totali i veturave nga API-ja:", total);
+          if (!total) return;
+
+          this.#totalBadge.textContent = `${CarFormat.formatNumber(total)}+ vetura në ofertë`;
+          this.#totalBadge.hidden = false;
+        })
+        .catch((error) => console.error(error));
+    }
+
     async #loadInitialCars() {
       const requestVersion = this.#requestVersion;
 
@@ -202,10 +218,16 @@
       this.#loadMoreButton.hidden = true;
 
       try {
-        const result = await window.EncarApi.searchCars({ query: this.#activeQuery });
+        const result = await window.EncarApi.searchCars({
+          query: this.#activeQuery,
+        });
         if (!this.#isCurrent(requestVersion)) return;
 
-        if (this.#showingRequestedYear && result.total === 0 && this.#laterYearQuery) {
+        if (
+          this.#showingRequestedYear &&
+          result.total === 0 &&
+          this.#laterYearQuery
+        ) {
           const laterResult = await window.EncarApi.searchCars({
             query: this.#laterYearQuery,
           });
@@ -285,6 +307,7 @@
     grid: document.querySelector("#cars-grid"),
     status: document.querySelector("#cars-status"),
     count: document.querySelector("#cars-count"),
+    totalBadge: document.querySelector("#cars-total-badge"),
     loadMoreButton: document.querySelector("#cars-load-more"),
   };
 

@@ -162,8 +162,21 @@
   const IMPORTED_CARS_QUERY = "(And.Hidden.N._.CarType.N.)";
 
   let manufacturerRequest;
+  let totalCarsCountRequest;
   const modelRequests = new Map();
   const variantRequests = new Map();
+
+  // Real inventory size, independent of whatever subset (trending, filtered)
+  // is currently being displayed/paginated.
+  function loadTotalCarsCount() {
+    if (!totalCarsCountRequest) {
+      totalCarsCountRequest = requestSearchData({ limit: 0 }).then(
+        (data) => Number(data.Count) || 0,
+      );
+    }
+
+    return totalCarsCountRequest;
+  }
 
   async function requestFilterOptions(query, filterName) {
     const data = await requestSearchData({
@@ -216,6 +229,7 @@
     loadManufacturers,
     loadModels,
     loadVariants,
+    loadTotalCarsCount,
     searchCars,
     searchTrendingCars,
   });
@@ -223,3 +237,4 @@
 
 window.EncarApi = EncarApi;
 window.encarCarsRequest = EncarApi.searchTrendingCars();
+window.encarTotalCarsCountRequest = EncarApi.loadTotalCarsCount();
