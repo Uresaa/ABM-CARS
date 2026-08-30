@@ -53,13 +53,17 @@ export async function requestCarAcquisitionCost(car, { timeoutMs = 10000 } = {})
     centerCode: "",
   }).toString();
 
-  const response = await requestEncar(url, { timeoutMs });
-  if (!response.ok) return 0;
+  try {
+    const response = await requestEncar(url, { timeoutMs });
+    if (!response.ok) return 0;
 
-  const data = JSON.parse(
-    new TextDecoder("euc-kr").decode(await response.arrayBuffer()),
-  );
-  return Number(data?.[0]?.acquisition?.totalPrice) || 0;
+    const data = JSON.parse(
+      new TextDecoder("euc-kr").decode(await response.arrayBuffer()),
+    );
+    return Number(data?.[0]?.acquisition?.totalPrice) || 0;
+  } catch {
+    return 0;
+  }
 }
 
 async function requestOptionalReport(path) {
