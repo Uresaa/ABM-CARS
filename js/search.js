@@ -11,8 +11,27 @@
     price: document.querySelector("#price"),
   };
   const searchButton = document.querySelector("#cars-search");
+  const FILTERS_STORAGE_KEY = "abmcars:search-filters";
 
   let modelRequestId = 0;
+
+  function saveFilterState() {
+    const state = Object.fromEntries(
+      Object.entries(filters).map(([key, select]) => [key, select.value]),
+    );
+
+    try {
+      sessionStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {}
+  }
+
+  function loadFilterState() {
+    try {
+      return JSON.parse(sessionStorage.getItem(FILTERS_STORAGE_KEY) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
 
   function replaceOptions(select, placeholder, options = []) {
     const fragment = document.createDocumentFragment();
@@ -117,7 +136,6 @@
         }
       });
 
-      // Most-listed trims first, so the popular ones surface at the top.
       const uniqueVariants = Array.from(mergedVariants.values()).sort(
         (first, second) =>
           second.count - first.count || first.label.localeCompare(second.label),
@@ -191,6 +209,8 @@
         })
       : null;
 
+    saveFilterState();
+
     window.dispatchEvent(
       new CustomEvent("cars:search", {
         detail: {
@@ -228,5 +248,30 @@
   filters.mileageTo.addEventListener("change", handleFilterChange);
   filters.price.addEventListener("change", handleFilterChange);
   searchButton.addEventListener("click", searchCars);
-  loadManufacturers();
+
+  async function restoreFilterState() {
+    const state = loadFilterState();
+    if (!state) return;
+
+    if (state.brand) {
+      filters.brand.value = state.brand;
+      await loadModels();
+    }
+    if (state.model) {
+      filters.model.value = state.model;
+      await loadVariants();
+    }
+    if (state.vehicleType) filters.vehicleType.value = state.vehicleType;
+    if (state.transmission) filters.transmission.value = state.transmission;
+    if (state.fuel) filters.fuel.value = state.fuel;
+    if (state.yearFrom) filters.yearFrom.value = state.yearFrom;
+    if (state.mileageFrom) filters.mileageFrom.value = state.mileageFrom;
+    updateMileageMaximums();
+    if (state.mileageTo) filters.mileageTo.value = state.mileageTo;
+    if (state.price) filters.price.value = state.price;
+
+    runSearch();
+  }
+
+  loadManufacturers().then(restoreFilterState);
 })();
