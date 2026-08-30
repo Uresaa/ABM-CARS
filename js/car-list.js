@@ -1,4 +1,12 @@
 (() => {
+  function hasSavedSearchFilters() {
+    try {
+      return Boolean(sessionStorage.getItem("abmcars:search-filters"));
+    } catch (error) {
+      return false;
+    }
+  }
+
   class CarListController {
     #template;
     #grid;
@@ -135,7 +143,6 @@
       const firstYear = Number(first.year) || Number.POSITIVE_INFINITY;
       const secondYear = Number(second.year) || Number.POSITIVE_INFINITY;
 
-      // Keep the requested year first, followed by later years.
       if (this.#yearFrom && firstYear !== secondYear) {
         return firstYear - secondYear;
       }
@@ -184,6 +191,8 @@
     }
 
     async #loadInitialCars() {
+      if (hasSavedSearchFilters()) return;
+
       const requestVersion = this.#requestVersion;
 
       try {
