@@ -88,6 +88,28 @@
                 >Fotografia nuk është në dispozicion</span
               >
               <span class="photo-count" data-field="photos"></span>
+              <button
+                id="gallery-zoom"
+                class="gallery__zoom"
+                type="button"
+                aria-label="Zmadho fotografinë"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="18"
+                  height="18"
+                >
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                  <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+                  <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+                  <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+                </svg>
+              </button>
             </div>
             <div id="thumbnails" class="gallery__thumbnails"></div>
           </section>
@@ -514,6 +536,69 @@
         </div>
       </div>
     </footer>
+
+    <div id="lightbox" class="lightbox" hidden>
+      <button
+        id="lightbox-close"
+        class="lightbox__close"
+        type="button"
+        aria-label="Mbyll"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          width="22"
+          height="22"
+        >
+          <path d="M18 6 6 18" />
+          <path d="M6 6l12 12" />
+        </svg>
+      </button>
+      <button
+        id="lightbox-prev"
+        class="lightbox__nav lightbox__nav--prev"
+        type="button"
+        aria-label="Fotografia paraardhëse"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          width="26"
+          height="26"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+      <img id="lightbox-image" class="lightbox__image" alt="" />
+      <button
+        id="lightbox-next"
+        class="lightbox__nav lightbox__nav--next"
+        type="button"
+        aria-label="Fotografia tjetër"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          width="26"
+          height="26"
+        >
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </button>
+      <span id="lightbox-counter" class="lightbox__counter"></span>
+    </div>
 
     <script src="../js/car-format.js?v=2"></script>
     <script src="../js/nav.js"></script>

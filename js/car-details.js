@@ -4,6 +4,17 @@ const error = document.querySelector("#error");
 const mainImage = document.querySelector("#main-image");
 const placeholder = document.querySelector("#image-placeholder");
 const thumbnails = document.querySelector("#thumbnails");
+const galleryZoomButton = document.querySelector("#gallery-zoom");
+const lightbox = document.querySelector("#lightbox");
+const lightboxImage = document.querySelector("#lightbox-image");
+const lightboxCounter = document.querySelector("#lightbox-counter");
+const lightboxClose = document.querySelector("#lightbox-close");
+const lightboxPrev = document.querySelector("#lightbox-prev");
+const lightboxNext = document.querySelector("#lightbox-next");
+
+let galleryPhotoList = [];
+let galleryTitle = "";
+let galleryIndex = 0;
 const formatNumber = CarFormat.formatNumber;
 const panelLabels = {
   HOOD: "Kapaku i motorit",
@@ -194,21 +205,86 @@ function renderReport(report) {
   reportSection.hidden = !hasReport;
 }
 
-function selectPhoto(photo, title, button) {
+function selectPhoto(photo, title, button, index = 0) {
   mainImage.src = photo.url;
   mainImage.alt = `${title} - fotografi`;
   mainImage.hidden = false;
   placeholder.hidden = true;
+  galleryIndex = index;
 
   thumbnails.querySelectorAll("button").forEach((item) => {
     item.classList.toggle("active", item === button);
   });
+
+  if (!lightbox.hidden) showLightboxPhoto();
 }
 
+function showLightboxPhoto() {
+  const photo = galleryPhotoList[galleryIndex];
+  if (!photo) return;
+
+  lightboxImage.src = photo.url;
+  lightboxImage.alt = `${galleryTitle} - fotografi ${galleryIndex + 1}`;
+  lightboxCounter.textContent = `${galleryIndex + 1} / ${galleryPhotoList.length}`;
+}
+
+function openLightbox() {
+  if (!galleryPhotoList.length) return;
+
+  showLightboxPhoto();
+  lightbox.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeLightbox() {
+  lightbox.hidden = true;
+  document.body.style.overflow = "";
+}
+
+function showNextPhoto() {
+  const nextIndex = (galleryIndex + 1) % galleryPhotoList.length;
+  selectPhoto(
+    galleryPhotoList[nextIndex],
+    galleryTitle,
+    thumbnails.children[nextIndex],
+    nextIndex,
+  );
+}
+
+function showPrevPhoto() {
+  const prevIndex =
+    (galleryIndex - 1 + galleryPhotoList.length) % galleryPhotoList.length;
+  selectPhoto(
+    galleryPhotoList[prevIndex],
+    galleryTitle,
+    thumbnails.children[prevIndex],
+    prevIndex,
+  );
+}
+
+galleryZoomButton.addEventListener("click", openLightbox);
+mainImage.addEventListener("click", openLightbox);
+lightboxClose.addEventListener("click", closeLightbox);
+lightboxPrev.addEventListener("click", showPrevPhoto);
+lightboxNext.addEventListener("click", showNextPhoto);
+lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) closeLightbox();
+});
+document.addEventListener("keydown", (event) => {
+  if (lightbox.hidden) return;
+  if (event.key === "Escape") closeLightbox();
+  if (event.key === "ArrowRight") showNextPhoto();
+  if (event.key === "ArrowLeft") showPrevPhoto();
+});
+
 function renderGallery(photos, title) {
+  galleryTitle = title;
+
   if (!photos.length) {
     mainImage.hidden = true;
     placeholder.hidden = false;
+    galleryPhotoList = [];
+    galleryZoomButton.hidden = true;
     return;
   }
 
@@ -216,6 +292,8 @@ function renderGallery(photos, title) {
   const galleryPhotos = mainPhoto
     ? [mainPhoto, ...photos.filter((photo) => photo !== mainPhoto)]
     : photos;
+  galleryPhotoList = galleryPhotos;
+  galleryZoomButton.hidden = false;
   const fragment = document.createDocumentFragment();
 
   galleryPhotos.forEach((photo, index) => {
@@ -228,12 +306,14 @@ function renderGallery(photos, title) {
     image.alt = "";
     image.loading = "lazy";
     button.append(image);
-    button.addEventListener("click", () => selectPhoto(photo, title, button));
+    button.addEventListener("click", () =>
+      selectPhoto(photo, title, button, index),
+    );
     fragment.append(button);
   });
 
   thumbnails.append(fragment);
-  selectPhoto(galleryPhotos[0], title, thumbnails.firstElementChild);
+  selectPhoto(galleryPhotos[0], title, thumbnails.firstElementChild, 0);
   mainImage.addEventListener("error", () => {
     mainImage.hidden = true;
     placeholder.hidden = false;
