@@ -249,7 +249,15 @@
   filters.price.addEventListener("change", handleFilterChange);
   searchButton.addEventListener("click", searchCars);
 
+  function isBackForwardNavigation() {
+    return (
+      performance.getEntriesByType("navigation")[0]?.type === "back_forward"
+    );
+  }
+
   async function restoreFilterState() {
+    if (!isBackForwardNavigation()) return;
+
     const state = loadFilterState();
     if (!state) return;
 

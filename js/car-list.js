@@ -1,5 +1,18 @@
 (() => {
+  function isBackForwardNavigation() {
+    return (
+      performance.getEntriesByType("navigation")[0]?.type === "back_forward"
+    );
+  }
+
   function hasSavedSearchFilters() {
+    if (!isBackForwardNavigation()) {
+      try {
+        sessionStorage.removeItem("abmcars:search-filters");
+      } catch (error) {}
+      return false;
+    }
+
     try {
       return Boolean(sessionStorage.getItem("abmcars:search-filters"));
     } catch (error) {
