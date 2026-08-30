@@ -178,6 +178,11 @@
         .catch((error) => console.error(error));
     }
 
+    #scrollToHash() {
+      if (!location.hash) return;
+      document.querySelector(location.hash)?.scrollIntoView();
+    }
+
     async #loadInitialCars() {
       const requestVersion = this.#requestVersion;
 
@@ -190,6 +195,7 @@
         this.#nextOffset = result.offset + result.limit;
         this.render(result.cars);
         this.#updateState();
+        this.#scrollToHash();
       } catch (error) {
         if (!this.#isCurrent(requestVersion)) return;
 
