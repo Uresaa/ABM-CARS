@@ -249,14 +249,27 @@
   filters.price.addEventListener("change", handleFilterChange);
   searchButton.addEventListener("click", searchCars);
 
-  function isBackForwardNavigation() {
+  function cameFromCarDetails() {
+    try {
+      return new URL(document.referrer).pathname.startsWith("/car-details/");
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function isReturningToResults() {
+    const navType = performance.getEntriesByType("navigation")[0]?.type;
+    // "navigate" + referrer only counts on the navigation that actually came
+    // from car-details — a later reload of this same page keeps the same
+    // referrer, but its own nav type is "reload", not "navigate".
     return (
-      performance.getEntriesByType("navigation")[0]?.type === "back_forward"
+      navType === "back_forward" ||
+      (navType === "navigate" && cameFromCarDetails())
     );
   }
 
   async function restoreFilterState() {
-    if (!isBackForwardNavigation()) return;
+    if (!isReturningToResults()) return;
 
     const state = loadFilterState();
     if (!state) return;
