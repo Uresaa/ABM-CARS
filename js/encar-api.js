@@ -5,7 +5,6 @@
   const IMAGE_URL = "/api/car-image?path=";
   const DETAIL_URL = "/car-details/";
   const NAVIGATION = "|Metadata|Sort";
-  let requestQueue = Promise.resolve();
 
   // ---- Low-level request, shared by car search and filter loading ----
 
@@ -36,10 +35,7 @@
   }
 
   function requestSearchData(options) {
-    const request = requestQueue.then(() => sendSearchRequest(options));
-
-    requestQueue = request.catch(() => undefined);
-    return request;
+    return sendSearchRequest(options);
   }
 
   // ---- Car search ----
