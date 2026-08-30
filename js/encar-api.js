@@ -6,8 +6,6 @@
   const DETAIL_URL = "/car-details/";
   const NAVIGATION = "|Metadata|Sort";
 
-  // ---- Low-level request, shared by car search and filter loading ----
-
   async function sendSearchRequest({
     offset = 0,
     limit = 12,
@@ -34,8 +32,29 @@
     return carsResponse.json();
   }
 
+  const MAX_CONCURRENT_REQUESTS = 4;
+  let activeRequests = 0;
+  const pendingRequests = [];
+
+  function runNextRequest() {
+    if (activeRequests >= MAX_CONCURRENT_REQUESTS) return;
+    const next = pendingRequests.shift();
+    if (!next) return;
+
+    activeRequests += 1;
+    sendSearchRequest(next.options)
+      .then(next.resolve, next.reject)
+      .finally(() => {
+        activeRequests -= 1;
+        runNextRequest();
+      });
+  }
+
   function requestSearchData(options) {
-    return sendSearchRequest(options);
+    return new Promise((resolve, reject) => {
+      pendingRequests.push({ options, resolve, reject });
+      runNextRequest();
+    });
   }
 
   // ---- Car search ----
@@ -60,8 +79,10 @@
     const secondRank = TRENDING_MANUFACTURER_LABELS.indexOf(second.label);
 
     if (firstRank !== -1 || secondRank !== -1) {
-      return (firstRank === -1 ? Infinity : firstRank) -
-        (secondRank === -1 ? Infinity : secondRank);
+      return (
+        (firstRank === -1 ? Infinity : firstRank) -
+        (secondRank === -1 ? Infinity : secondRank)
+      );
     }
 
     return first.label.localeCompare(second.label, "en");
@@ -90,7 +111,8 @@
         typeof car.SellingPrice === "number" ? car.SellingPrice : null,
       fuelType: car.FuelType,
       transmission: car.Transmission,
-      accidentFree: typeof car.AccidentFree === "boolean" ? car.AccidentFree : null,
+      accidentFree:
+        typeof car.AccidentFree === "boolean" ? car.AccidentFree : null,
       photoUrl: photoPath
         ? `${IMAGE_URL}${encodeURIComponent(photoPath)}`
         : null,
@@ -208,14 +230,29 @@
 
   function loadVariants(modelGroupQuery) {
     if (!variantRequests.has(modelGroupQuery)) {
-      variantRequests.set(modelGroupQuery, (async () => {
-        const models = await requestFilterOptions(modelGroupQuery, "Model");
-        const groups = (await Promise.all(models.map(({ query }) => requestFilterOptions(query, "BadgeGroup")))).flat();
-        const badges = (await Promise.all(groups.map(({ query }) => requestFilterOptions(query, "Badge")))).flat();
-        return sortByPopularity(
-          Array.from(new Map(badges.map((badge) => [badge.query, badge])).values()),
-        );
-      })());
+      variantRequests.set(
+        modelGroupQuery,
+        (async () => {
+          const models = await requestFilterOptions(modelGroupQuery, "Model");
+          const groups = (
+            await Promise.all(
+              models.map(({ query }) =>
+                requestFilterOptions(query, "BadgeGroup"),
+              ),
+            )
+          ).flat();
+          const badges = (
+            await Promise.all(
+              groups.map(({ query }) => requestFilterOptions(query, "Badge")),
+            )
+          ).flat();
+          return sortByPopularity(
+            Array.from(
+              new Map(badges.map((badge) => [badge.query, badge])).values(),
+            ),
+          );
+        })(),
+      );
     }
     return variantRequests.get(modelGroupQuery);
   }
