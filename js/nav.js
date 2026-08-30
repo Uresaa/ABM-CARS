@@ -11,4 +11,10 @@
   menuToggle.addEventListener("click", () => {
     nav.classList.toggle("active");
   });
+
+  nav.querySelectorAll(".nav__list a").forEach((link) => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("active");
+    });
+  });
 })();
