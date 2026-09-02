@@ -14,8 +14,36 @@ const imageRequestHeaders = {
   Referer: "https://www.encar.com/",
 };
 
-function requestEncar(url, { headers = requestHeaders, timeoutMs = 15000 } = {}) {
-  return fetch(url, { headers, signal: AbortSignal.timeout(timeoutMs) });
+const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Encar occasionally rejects a request transiently (rate limiting, brief
+// upstream hiccup) even when the caller is well-behaved — retrying once or
+// twice clears most of these instead of failing the whole page/dropdown
+// over a single flaky request among many concurrent ones.
+async function requestEncar(
+  url,
+  { headers = requestHeaders, timeoutMs = 15000, retries = 2 } = {},
+) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+
+      if (!RETRYABLE_STATUSES.has(response.status) || attempt >= retries) {
+        return response;
+      }
+    } catch (error) {
+      if (attempt >= retries) throw error;
+    }
+
+    await delay(300 * (attempt + 1));
+  }
 }
 
 export function requestCarList(searchParameters) {

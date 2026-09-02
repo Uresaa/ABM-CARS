@@ -172,10 +172,6 @@
     };
   }
 
-  // ---- Filter options for the search form (manufacturers / models) ----
-  // Each lookup is cached by key so repeat calls (e.g. re-opening the brand
-  // dropdown) reuse the in-flight or resolved request instead of refetching.
-
   const DOMESTIC_CARS_QUERY = "(And.Hidden.N._.CarType.Y.)";
   const IMPORTED_CARS_QUERY = "(And.Hidden.N._.CarType.N.)";
 
@@ -228,6 +224,13 @@
     return modelRequests.get(manufacturerQuery);
   }
 
+  async function collectFulfilled(promises) {
+    const results = await Promise.allSettled(promises);
+    return results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+  }
+
   function loadVariants(modelGroupQuery) {
     if (!variantRequests.has(modelGroupQuery)) {
       variantRequests.set(
@@ -235,14 +238,14 @@
         (async () => {
           const models = await requestFilterOptions(modelGroupQuery, "Model");
           const groups = (
-            await Promise.all(
+            await collectFulfilled(
               models.map(({ query }) =>
                 requestFilterOptions(query, "BadgeGroup"),
               ),
             )
           ).flat();
           const badges = (
-            await Promise.all(
+            await collectFulfilled(
               groups.map(({ query }) => requestFilterOptions(query, "Badge")),
             )
           ).flat();
