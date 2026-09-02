@@ -9,9 +9,6 @@
 
   function isReturningToResults() {
     const navType = performance.getEntriesByType("navigation")[0]?.type;
-    // "navigate" + referrer only counts on the navigation that actually came
-    // from car-details — a later reload of this same page keeps the same
-    // referrer, but its own nav type is "reload", not "navigate".
     return (
       navType === "back_forward" ||
       (navType === "navigate" && cameFromCarDetails())

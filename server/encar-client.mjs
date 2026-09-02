@@ -20,10 +20,6 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Encar occasionally rejects a request transiently (rate limiting, brief
-// upstream hiccup) even when the caller is well-behaved — retrying once or
-// twice clears most of these instead of failing the whole page/dropdown
-// over a single flaky request among many concurrent ones.
 async function requestEncar(
   url,
   { headers = requestHeaders, timeoutMs = 15000, retries = 2 } = {},

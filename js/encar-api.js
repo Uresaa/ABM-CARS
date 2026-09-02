@@ -57,9 +57,6 @@
     });
   }
 
-  // ---- Car search ----
-
-  // BMW, Mercedes-Benz, Audi
   const TRENDING_MANUFACTURERS = ["BMW", "벤츠", "아우디"];
   const TRENDING_MANUFACTURER_LABELS = [
     "BMW",
@@ -88,7 +85,6 @@
     return first.label.localeCompare(second.label, "en");
   }
 
-  // Most-listed options first, so the popular ones surface at the top.
   function sortByPopularity(options) {
     return [...options].sort(
       (first, second) =>
@@ -180,8 +176,6 @@
   const modelRequests = new Map();
   const variantRequests = new Map();
 
-  // Real inventory size, independent of whatever subset (trending, filtered)
-  // is currently being displayed/paginated.
   function loadTotalCarsCount() {
     if (!totalCarsCountRequest) {
       totalCarsCountRequest = requestSearchData({ limit: 0 }).then(
