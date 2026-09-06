@@ -321,11 +321,15 @@ function renderGallery(photos, title) {
 }
 
 function renderCar(car) {
-  const title = `${car.manufacturer || ""} ${car.model || "Veturë"}`.trim();
-  const grade = [car.grade, car.gradeDetail].filter(Boolean).join(" · ");
+  const title = `${CarFormat.manufacturer(car.manufacturer)} ${
+    CarFormat.model(car.model) || "Veturë"
+  }`.trim();
+  const grade = [CarFormat.badge(car.grade), CarFormat.badge(car.gradeDetail)]
+    .filter(Boolean)
+    .join(" · ");
   const values = {
-    manufacturer: car.manufacturer,
-    model: car.model,
+    manufacturer: CarFormat.manufacturer(car.manufacturer),
+    model: CarFormat.model(car.model),
     year: car.year,
     kosovoPrice: CarFormat.formatPrice(car.sellingPriceEur),
     mileage: `${formatNumber(car.mileage)} km`,
@@ -336,7 +340,7 @@ function renderCar(car) {
     seats: car.seats ? `${car.seats} ulëse` : "—",
     body: CarFormat.body(car.bodyType),
     registration: registrationDate(car.registrationMonth),
-    variant: car.gradeDetail || car.grade,
+    variant: CarFormat.badge(car.gradeDetail) || CarFormat.badge(car.grade),
     photos: `${car.photos?.length || 0} fotografi`,
     accidentReport: car.report?.accident
       ? `${car.report.accident.accidentCount} të regjistruara`

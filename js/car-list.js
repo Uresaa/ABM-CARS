@@ -84,7 +84,7 @@
 
       fragment.querySelector("[data-car-title]").textContent = title;
       fragment.querySelector("[data-car-badge]").textContent =
-        car.badge || "Detajet e modelit nuk janë listuar";
+        CarFormat.badge(car.badge) || "Detajet e modelit nuk janë listuar";
       fragment.querySelector("[data-car-year]").textContent = car.year || "—";
       fragment.querySelector("[data-car-mileage]").textContent =
         `${CarFormat.formatNumber(car.mileage)} km`;
