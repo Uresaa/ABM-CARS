@@ -77,32 +77,55 @@
     }
   }
 
-  function formatTypeLabel(label) {
-    const translations = [
-      ["어드밴티지", "Advantage"],
-      ["스포츠", "Sport"],
-      ["프리미엄", "Premium"],
-      ["럭셔리", "Luxury"],
-      ["모던", "Modern"],
-      ["익스클루시브", "Exclusive"],
-      ["인스퍼레이션", "Inspiration"],
-      ["디젤", "Diesel"],
-      ["가솔린", "Benzinë"],
-      ["전기", "Elektrik"],
-      ["하이브리드", "Hibrid"],
-    ];
+  const TYPE_TRANSLATIONS = [
+    ["에어로다이나믹", "Aerodynamic"],
+    ["블루이피션시", "BlueEfficiency"],
+    ["인스퍼레이션", "Inspiration"],
+    ["익스클루시브", "Exclusive"],
+    ["스타일패키지", "Style Package"],
+    ["어드밴티지", "Advantage"],
+    ["어드밴스드", "Advanced"],
+    ["아방가르드", "Avantgarde"],
+    ["카브리올레", "Cabriolet"],
+    ["카브레올레", "Cabriolet"],
+    ["에스테이트", "Estate"],
+    ["하이브리드", "Hibrid"],
+    ["스포츠쿠페", "Sport Coupe"],
+    ["프리미엄", "Premium"],
+    ["다이나믹", "Dynamic"],
+    ["콰트로", "Quattro"],
+    ["투어링", "Touring"],
+    ["럭셔리", "Luxury"],
+    ["블루텍", "BlueTEC"],
+    ["스페셜", "Special"],
+    ["컴포트", "Comfort"],
+    ["액티브", "Active"],
+    ["알피나", "Alpina"],
+    ["에디션", "Edition"],
+    ["패키지", "Package"],
+    ["플러스", "Plus"],
+    ["스포츠", "Sport"],
+    ["아반트", "Avant"],
+    ["온라인", "Online"],
+    ["가솔린", "Benzinë"],
+    ["에어로", "Aero"],
+    ["모던", "Modern"],
+    ["쿠페", "Coupe"],
+    ["세단", "Sedan"],
+    ["웨건", "Wagon"],
+    ["디젤", "Diesel"],
+    ["전기", "Elektrik"],
+    ["프로", "Pro"],
+    ["기타", "Tjetër"],
+  ].sort((first, second) => second[0].length - first[0].length);
 
-    const formatted = translations.reduce(
-      (value, [korean, translated]) => value.replaceAll(korean, translated),
+  function formatTypeLabel(label) {
+    const translated = TYPE_TRANSLATIONS.reduce(
+      (value, [korean, english]) => value.replaceAll(korean, english),
       label,
     );
 
-    return (
-      formatted
-        .replace(/[가-힣]+/g, "")
-        .replace(/\s{2,}/g, " ")
-        .trim() || "Tip i veçantë"
-    );
+    return translated.replace(/\s{2,}/g, " ").trim() || "Tip i veçantë";
   }
 
   async function loadVariants() {
