@@ -6,6 +6,13 @@
   const DETAIL_URL = "/car-details/";
   const NAVIGATION = "|Metadata|Sort";
 
+  const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+  const MAX_ATTEMPTS = 3;
+
+  function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   async function sendSearchRequest({
     offset = 0,
     limit = 12,
@@ -20,16 +27,31 @@
 
     if (navigation) parameters.set("inav", navigation);
 
-    const carsResponse = await fetch(`${LIST_URL}?${parameters}`, {
-      headers: { Accept: "application/json" },
-      credentials: "omit",
-    });
+    for (let attempt = 1; ; attempt++) {
+      let carsResponse;
 
-    if (!carsResponse.ok) {
-      throw new Error(`Encar returned HTTP ${carsResponse.status}`);
+      try {
+        carsResponse = await fetch(`${LIST_URL}?${parameters}`, {
+          headers: { Accept: "application/json" },
+          credentials: "omit",
+        });
+      } catch (error) {
+        if (attempt >= MAX_ATTEMPTS) throw error;
+        await delay(400 * attempt);
+        continue;
+      }
+
+      if (carsResponse.ok) return carsResponse.json();
+
+      if (
+        !RETRYABLE_STATUSES.has(carsResponse.status) ||
+        attempt >= MAX_ATTEMPTS
+      ) {
+        throw new Error(`Encar returned HTTP ${carsResponse.status}`);
+      }
+
+      await delay(400 * attempt);
     }
-
-    return carsResponse.json();
   }
 
   const MAX_CONCURRENT_REQUESTS = 4;
@@ -171,19 +193,27 @@
   const DOMESTIC_CARS_QUERY = "(And.Hidden.N._.CarType.Y.)";
   const IMPORTED_CARS_QUERY = "(And.Hidden.N._.CarType.N.)";
 
-  let manufacturerRequest;
-  let totalCarsCountRequest;
+  const singleRequests = new Map();
   const modelRequests = new Map();
   const variantRequests = new Map();
 
-  function loadTotalCarsCount() {
-    if (!totalCarsCountRequest) {
-      totalCarsCountRequest = requestSearchData({ limit: 0 }).then(
-        (data) => Number(data.Count) || 0,
-      );
+  function rememberRequest(requests, key, createRequest) {
+    if (!requests.has(key)) {
+      const request = createRequest();
+
+      request.catch(() => {
+        if (requests.get(key) === request) requests.delete(key);
+      });
+      requests.set(key, request);
     }
 
-    return totalCarsCountRequest;
+    return requests.get(key);
+  }
+
+  function loadTotalCarsCount() {
+    return rememberRequest(singleRequests, "totalCars", () =>
+      requestSearchData({ limit: 0 }).then((data) => Number(data.Count) || 0),
+    );
   }
 
   async function requestFilterOptions(query, filterName) {
@@ -197,25 +227,24 @@
   }
 
   function loadManufacturers() {
-    if (!manufacturerRequest) {
-      manufacturerRequest = Promise.all([
+    return rememberRequest(singleRequests, "manufacturers", async () => {
+      const groups = await collectFulfilled([
         requestFilterOptions(DOMESTIC_CARS_QUERY, "Manufacturer"),
         requestFilterOptions(IMPORTED_CARS_QUERY, "Manufacturer"),
-      ]).then((groups) => groups.flat().sort(compareManufacturers));
-    }
+      ]);
 
-    return manufacturerRequest;
+      if (!groups.length) {
+        throw new Error("Manufacturer lookups failed");
+      }
+
+      return groups.flat().sort(compareManufacturers);
+    });
   }
 
   function loadModels(manufacturerQuery) {
-    if (!modelRequests.has(manufacturerQuery)) {
-      modelRequests.set(
-        manufacturerQuery,
-        requestFilterOptions(manufacturerQuery, "ModelGroup"),
-      );
-    }
-
-    return modelRequests.get(manufacturerQuery);
+    return rememberRequest(modelRequests, manufacturerQuery, () =>
+      requestFilterOptions(manufacturerQuery, "ModelGroup"),
+    );
   }
 
   async function collectFulfilled(promises) {
@@ -226,32 +255,25 @@
   }
 
   function loadVariants(modelGroupQuery) {
-    if (!variantRequests.has(modelGroupQuery)) {
-      variantRequests.set(
-        modelGroupQuery,
-        (async () => {
-          const models = await requestFilterOptions(modelGroupQuery, "Model");
-          const groups = (
-            await collectFulfilled(
-              models.map(({ query }) =>
-                requestFilterOptions(query, "BadgeGroup"),
-              ),
-            )
-          ).flat();
-          const badges = (
-            await collectFulfilled(
-              groups.map(({ query }) => requestFilterOptions(query, "Badge")),
-            )
-          ).flat();
-          return sortByPopularity(
-            Array.from(
-              new Map(badges.map((badge) => [badge.query, badge])).values(),
-            ),
-          );
-        })(),
+    return rememberRequest(variantRequests, modelGroupQuery, async () => {
+      const models = await requestFilterOptions(modelGroupQuery, "Model");
+      const groups = (
+        await collectFulfilled(
+          models.map(({ query }) => requestFilterOptions(query, "BadgeGroup")),
+        )
+      ).flat();
+      const badges = (
+        await collectFulfilled(
+          groups.map(({ query }) => requestFilterOptions(query, "Badge")),
+        )
+      ).flat();
+
+      return sortByPopularity(
+        Array.from(
+          new Map(badges.map((badge) => [badge.query, badge])).values(),
+        ),
       );
-    }
-    return variantRequests.get(modelGroupQuery);
+    });
   }
 
   return Object.freeze({

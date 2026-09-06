@@ -21,10 +21,11 @@ import {
 import {
   getCachedSearch,
   getPendingSearch,
+  getStaleSearch,
   setCachedSearch,
   setPendingSearch,
 } from "./search-cache.mjs";
-import { sendJson } from "./http-response.mjs";
+import { sendJson, sendJsonText } from "./http-response.mjs";
 
 const MAX_CONCURRENT_LIST_ENRICHMENTS = 3;
 let activeListEnrichments = 0;
@@ -143,32 +144,34 @@ async function loadCarList(searchParameters) {
 
 export async function handleCarListRequest(url, response) {
   const cacheKey = url.search;
-  const cached = getCachedSearch(cacheKey);
+  const isMetadata = url.searchParams.has("inav");
+  const browserCacheHeaders = isMetadata
+    ? { "Cache-Control": "public, max-age=1800" }
+    : {};
+  const cached = getCachedSearch(cacheKey, isMetadata);
 
   if (cached) {
-    sendJson(response, 200, cached);
+    sendJsonText(response, 200, cached, browserCacheHeaders);
     return;
   }
-
-  const pending = getPendingSearch(cacheKey);
-  if (pending) {
-    try {
-      sendJson(response, 200, await pending);
-    } catch (error) {
-      sendJson(response, error.statusCode || 502, {
-        error: "Cars could not be loaded",
-      });
-    }
-    return;
-  }
-
-  const request = setPendingSearch(cacheKey, loadCarList(url.searchParams));
 
   try {
-    const data = await request;
-    setCachedSearch(cacheKey, data);
-    sendJson(response, 200, data);
+    const body = await (getPendingSearch(cacheKey) ??
+      setPendingSearch(
+        cacheKey,
+        loadCarList(url.searchParams).then((data) => JSON.stringify(data)),
+      ));
+
+    setCachedSearch(cacheKey, body);
+    sendJsonText(response, 200, body, browserCacheHeaders);
   } catch (error) {
+    const stale = getStaleSearch(cacheKey);
+
+    if (stale) {
+      sendJsonText(response, 200, stale);
+      return;
+    }
+
     sendJson(response, error.statusCode || 502, {
       error: "Cars could not be loaded",
     });
