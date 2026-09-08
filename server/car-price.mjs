@@ -1,7 +1,7 @@
 const EUR_PER_KRW = 0.0006134351235;
 
 const kosovoDeliveryFees = [
-  { maxPrice: 15000, fee: 1600 },
+  { maxPrice: 15000, fee: 1850 },
   { maxPrice: 17000, fee: 1350 },
   { maxPrice: 20000, fee: 1000 },
   { maxPrice: 30000, fee: 800 },
