@@ -519,6 +519,22 @@ main.container {
   font-size: 14px;
 }
 
+.vehicle-reference .encar-link {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #8a94a6;
+  font-size: 13px;
+  text-decoration: none;
+  transition: 0.25s;
+}
+
+.vehicle-reference .encar-link:hover,
+.vehicle-reference .encar-link:focus-visible {
+  color: #f0eee9;
+}
+
 .full-information {
   margin-top: 64px;
 }
@@ -718,6 +734,13 @@ main.container {
   .vehicle-reference {
     width: 100%;
     max-width: 500px;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 14px 20px;
+  }
+  .vehicle-reference .encar-link {
+    margin-left: 0;
+    flex-basis: 100%;
   }
   .summary-card,
   .information-card,

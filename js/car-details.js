@@ -365,6 +365,8 @@ function renderCar(car) {
   document.querySelector("#car-grade").textContent =
     grade || "Detajet e modelit";
   document.querySelector("#car-id").textContent = car.id;
+  document.querySelector("#encar-link").href =
+    `https://fem.encar.com/cars/detail/${encodeURIComponent(car.id)}`;
 
   fillFields(values);
 
