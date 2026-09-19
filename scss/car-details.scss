@@ -411,11 +411,10 @@ main.container {
 
 @media (max-width: 560px) {
   body {
-    margin-left: 20px;
-    align-items: center;
+    padding: 0 12px;
   }
   .container {
-    width: calc(100% - 24px);
+    width: 100%;
   }
 
   .topbar .container {

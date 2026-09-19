@@ -676,11 +676,10 @@ main.container {
 }
 @media (max-width: 560px) {
   body {
-    margin-left: 20px;
-    align-items: center;
+    padding: 0 12px;
   }
   .container {
-    width: calc(100% - 24px);
+    width: 100%;
   }
   .topbar .container {
     min-height: 68px;
@@ -734,6 +733,8 @@ main.container {
   .vehicle-reference {
     width: 100%;
     max-width: 500px;
+  }
+  .vehicle-reference {
     flex-wrap: wrap;
     gap: 8px 16px;
     padding: 14px 20px;
