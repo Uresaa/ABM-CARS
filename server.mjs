@@ -53,7 +53,12 @@ const server = createServer(async (request, response) => {
     const status = error?.code === "ENOENT" ? 404 : 502;
 
     if (status === 502) {
-      console.error(error);
+      console.error("Upstream request failed", {
+        message: error?.message,
+        cause: error?.cause?.message,
+        code: error?.cause?.code || error?.code,
+        hostname: error?.cause?.hostname,
+      });
     }
 
     sendJson(response, status, {
