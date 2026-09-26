@@ -1,33 +1,26 @@
-const CACHE_TTL_MS = 60 * 60 * 1000;
-const cache = new Map();
-const pending = new Map();
+import { createTtlCache } from "./ttl-cache.mjs";
+
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const MAX_ENTRIES = 5000;
+
+const categories = createTtlCache({ ttlMs: CACHE_TTL_MS, maxEntries: MAX_ENTRIES });
 
 export function getCachedCategory(carId) {
-  const entry = cache.get(carId);
-  if (!entry) return null;
+  return categories.get(carId);
+}
 
-  if (Date.now() - entry.cachedAt > CACHE_TTL_MS) {
-    cache.delete(carId);
-    return null;
-  }
-
-  return entry.category;
+export function getStaleCategory(carId) {
+  return categories.getStale(carId);
 }
 
 export function setCachedCategory(carId, category) {
-  cache.set(carId, { category, cachedAt: Date.now() });
+  categories.set(carId, category);
 }
 
 export function getPendingCategory(carId) {
-  return pending.get(carId) || null;
+  return categories.getPending(carId);
 }
 
 export function setPendingCategory(carId, request) {
-  pending.set(carId, request);
-
-  request.finally(() => {
-    if (pending.get(carId) === request) pending.delete(carId);
-  }).catch(() => {});
-
-  return request;
+  return categories.setPending(carId, request);
 }

@@ -6,8 +6,18 @@ import {
   handleCarImageRequest,
   handleCarListRequest,
 } from "./server/request-handlers.mjs";
+import { clientKey, isRateLimited } from "./server/rate-limit.mjs";
+import { startCacheWarmer } from "./server/cache-warmer.mjs";
 
 const port = Number(process.env.PORT) || 4173;
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled rejection", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception", error);
+});
 
 const server = createServer(async (request, response) => {
   try {
@@ -20,6 +30,17 @@ const server = createServer(async (request, response) => {
       request.url,
       `http://${request.headers.host || "localhost"}`,
     );
+
+    if (url.pathname.startsWith("/api/") && isRateLimited(clientKey(request))) {
+      sendJson(
+        response,
+        429,
+        { error: "Too many requests" },
+        { "Retry-After": "60" },
+      );
+      return;
+    }
+
     const carDetailMatch = url.pathname.match(/^\/api\/cars\/(\d+)$/);
 
     if (carDetailMatch) {
@@ -31,7 +52,7 @@ const server = createServer(async (request, response) => {
 
     if (carDetailsPageMatch) {
       url.pathname = "/html/car-details.html";
-      await servePublicFile(url, response);
+      await servePublicFile(url, request, response);
       return;
     }
 
@@ -48,17 +69,23 @@ const server = createServer(async (request, response) => {
     if (url.pathname === "/") {
       url.pathname = "/html/index.html";
     }
-    await servePublicFile(url, response);
+    await servePublicFile(url, request, response);
   } catch (error) {
-    const status = error?.code === "ENOENT" ? 404 : 502;
+    const status = error?.code === "ENOENT" ? 404 : error?.statusCode || 502;
 
-    if (status === 502) {
-      console.error("Upstream request failed", {
+    if (status !== 404) {
+      console.error("Request failed", {
+        url: request.url,
         message: error?.message,
         cause: error?.cause?.message,
         code: error?.cause?.code || error?.code,
         hostname: error?.cause?.hostname,
       });
+    }
+
+    if (response.headersSent) {
+      response.end();
+      return;
     }
 
     sendJson(response, status, {
@@ -68,8 +95,15 @@ const server = createServer(async (request, response) => {
   }
 });
 
+server.requestTimeout = 45000;
+server.headersTimeout = 20000;
+server.keepAliveTimeout = 65000;
+
 server.listen(port, () => {
   console.log(
     `ABM CARS is running at http://localhost:${port}/html/index.html`,
   );
+  startCacheWarmer().catch((error) => {
+    console.error("Cache warmer failed to start", error);
+  });
 });
