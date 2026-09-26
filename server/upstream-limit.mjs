@@ -1,5 +1,5 @@
 const FAILURE_THRESHOLD = 5;
-const MAX_COOLDOWN_MS = 15 * 60 * 1000;
+const MAX_COOLDOWN_MS = 8 * 60 * 1000;
 
 export class UpstreamUnavailableError extends Error {
   constructor(message = "The upstream service is unavailable") {

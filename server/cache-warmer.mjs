@@ -2,9 +2,13 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { warmCarList } from "./request-handlers.mjs";
-import { getStaleSearch, setCachedSearch } from "./search-cache.mjs";
+import {
+  getCachedSearch,
+  getStaleSearch,
+  setCachedSearch,
+} from "./search-cache.mjs";
 
-const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+const REFRESH_INTERVAL_MS = 25 * 60 * 1000;
 const STARTUP_DELAY_MS = 1000;
 
 const ALL_CARS_QUERY = "(And.Hidden.N.)";
@@ -64,36 +68,48 @@ function homepageSearchUrls() {
 
 async function restoreSnapshot() {
   try {
-    const snapshot = JSON.parse(await readFile(snapshotPath, "utf8"));
+    const { savedAt, entries } = JSON.parse(await readFile(snapshotPath, "utf8"));
+    const isFresh = Date.now() - Number(savedAt) < REFRESH_INTERVAL_MS;
 
-    for (const [key, body] of Object.entries(snapshot)) {
+    for (const [key, body] of Object.entries(entries || {})) {
       if (typeof body !== "string") continue;
 
-      setCachedSearch(key, body);
+      setCachedSearch(key, body, isFresh ? undefined : 0);
       lastGoodBodies.set(key, body);
     }
 
-    console.log("Restored homepage cache", { entries: Object.keys(snapshot).length });
+    console.log("Restored homepage cache", {
+      entries: Object.keys(entries || {}).length,
+      fresh: isFresh,
+    });
   } catch {
     return;
   }
 }
 
 async function saveSnapshot() {
-  const snapshot = Object.fromEntries(lastGoodBodies);
+  const entries = Object.fromEntries(lastGoodBodies);
 
-  if (!Object.keys(snapshot).length) return;
+  if (!Object.keys(entries).length) return;
 
   try {
     await mkdir(dirname(snapshotPath), { recursive: true });
-    await writeFile(snapshotPath, JSON.stringify(snapshot), "utf8");
+    await writeFile(
+      snapshotPath,
+      JSON.stringify({ savedAt: Date.now(), entries }),
+      "utf8",
+    );
   } catch (error) {
     console.error("Cache snapshot failed", { message: error?.message });
   }
 }
 
-async function warmHomepage() {
+async function warmHomepage({ skipFresh = false } = {}) {
   for (const url of homepageSearchUrls()) {
+    if (skipFresh && getCachedSearch(url.search, url.searchParams.has("inav"))) {
+      continue;
+    }
+
     try {
       const { degraded } = await warmCarList(url);
 
@@ -112,6 +128,6 @@ async function warmHomepage() {
 export async function startCacheWarmer() {
   await restoreSnapshot();
 
-  setTimeout(warmHomepage, STARTUP_DELAY_MS).unref?.();
-  setInterval(warmHomepage, REFRESH_INTERVAL_MS).unref?.();
+  setTimeout(() => warmHomepage({ skipFresh: true }), STARTUP_DELAY_MS).unref?.();
+  setInterval(() => warmHomepage(), REFRESH_INTERVAL_MS).unref?.();
 }

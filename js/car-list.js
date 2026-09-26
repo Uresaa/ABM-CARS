@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   function cameFromCarDetails() {
     try {
       return new URL(document.referrer).pathname.startsWith("/car-details/");
@@ -238,21 +238,51 @@
       }
     }
 
-    async search({ query, yearFrom, exactYearQuery, laterYearQuery }) {
-      const requestVersion = ++this.#requestVersion;
+    #captureResults() {
+      return {
+        activeQuery: this.#activeQuery,
+        yearFrom: this.#yearFrom,
+        laterYearQuery: this.#laterYearQuery,
+        showingRequestedYear: this.#showingRequestedYear,
+        showingTrending: this.#showingTrending,
+        totalCars: this.#totalCars,
+        nextOffset: this.#nextOffset,
+        cars: this.#cars,
+        carIds: new Set(this.#renderedCarIds),
+        carKeys: new Set(this.#renderedCarKeys),
+      };
+    }
 
-      this.#activeQuery = exactYearQuery || query;
-      this.#yearFrom = yearFrom;
-      this.#laterYearQuery = laterYearQuery;
-      this.#showingRequestedYear = Boolean(exactYearQuery);
-      this.#showingTrending = false;
+    #restoreResults(snapshot) {
+      this.#activeQuery = snapshot.activeQuery;
+      this.#yearFrom = snapshot.yearFrom;
+      this.#laterYearQuery = snapshot.laterYearQuery;
+      this.#showingRequestedYear = snapshot.showingRequestedYear;
+      this.#showingTrending = snapshot.showingTrending;
+      this.#totalCars = snapshot.totalCars;
+      this.#nextOffset = snapshot.nextOffset;
+      this.#cars = snapshot.cars;
+      this.#renderedCarIds = snapshot.carIds;
+      this.#renderedCarKeys = snapshot.carKeys;
+    }
+
+    #clearResults() {
       this.#renderedCarIds.clear();
       this.#renderedCarKeys.clear();
       this.#cars = [];
       this.#nextOffset = 0;
       this.#grid.replaceChildren();
+    }
+
+    async search({ query, yearFrom, exactYearQuery, laterYearQuery }) {
+      const requestVersion = ++this.#requestVersion;
+      const previous = this.#captureResults();
+
+      this.#activeQuery = exactYearQuery || query;
+      this.#yearFrom = yearFrom;
+      this.#laterYearQuery = laterYearQuery;
+      this.#showingRequestedYear = Boolean(exactYearQuery);
       this.#status.textContent = "Duke kërkuar veturat...";
-      this.#count.textContent = "";
       this.#loadMoreButton.hidden = true;
 
       try {
@@ -274,10 +304,14 @@
           this.#activeQuery = this.#laterYearQuery;
           this.#laterYearQuery = null;
           this.#showingRequestedYear = false;
+          this.#showingTrending = false;
+          this.#clearResults();
           this.#totalCars = laterResult.total;
           this.#nextOffset = laterResult.offset + laterResult.limit;
           this.render(laterResult.cars);
         } else {
+          this.#showingTrending = false;
+          this.#clearResults();
           this.#totalCars = result.total;
           this.#nextOffset = result.offset + result.limit;
           this.render(result.cars);
@@ -287,7 +321,11 @@
         if (!this.#isCurrent(requestVersion)) return;
 
         console.error(error);
-        this.#status.textContent = "Kërkimi dështoi. Provo përsëri.";
+        this.#restoreResults(previous);
+        this.#updateState();
+        this.#status.textContent = previous.cars.length
+          ? "Kërkimi nuk u krye tani. Po shfaqen veturat e mëparshme — provo sërish pas pak."
+          : "Kërkimi nuk u krye tani. Provo sërish pas pak.";
       }
     }
 
