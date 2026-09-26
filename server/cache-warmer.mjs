@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { tmpdir } from "node:os";
+import { dirname } from "node:path";
+import { homepageSnapshotPath } from "./paths.mjs";
 import { warmCarList } from "./request-handlers.mjs";
 import {
   getCachedSearch,
@@ -20,8 +20,7 @@ const TRENDING_MANUFACTURERS = ["BMW", "\uBCA4\uCE20", "\uC544\uC6B0\uB514"];
 const TRENDING_CARS_PER_MANUFACTURER = 4;
 const TRENDING_OFFSETS = [0, TRENDING_CARS_PER_MANUFACTURER];
 
-const snapshotPath =
-  process.env.CACHE_SNAPSHOT_PATH || join(tmpdir(), "abm-cars", "homepage.json");
+const snapshotPath = homepageSnapshotPath;
 
 const lastGoodBodies = new Map();
 

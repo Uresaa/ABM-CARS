@@ -1,4 +1,4 @@
-const status = document.querySelector("#status");
+﻿const status = document.querySelector("#status");
 const details = document.querySelector("#car-details");
 const error = document.querySelector("#error");
 const mainImage = document.querySelector("#main-image");
@@ -376,7 +376,12 @@ function renderCar(car) {
   details.hidden = false;
 }
 
-function showError() {
+function showError(message) {
+  if (message) {
+    const heading = error.firstChild;
+    if (heading) heading.textContent = `${message} `;
+  }
+
   status.hidden = true;
   error.hidden = false;
 }
@@ -393,6 +398,12 @@ async function loadCar() {
 
   try {
     const response = await fetch(`/api/cars/${carId}`);
+
+    if (response.status === 404) {
+      showError("Kjo veturë nuk është më në shitje.");
+      return;
+    }
+
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     renderCar(await response.json());
   } catch (requestError) {

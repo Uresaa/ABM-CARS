@@ -13,6 +13,10 @@ export function getStaleDetail(carId) {
   return details.getStale(carId);
 }
 
+export function forgetDetail(carId) {
+  details.remove(carId);
+}
+
 export function setCachedDetail(carId, body) {
   details.set(carId, body);
 }

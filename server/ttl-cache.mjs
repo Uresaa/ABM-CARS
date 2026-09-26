@@ -44,5 +44,31 @@ export function createTtlCache({ ttlMs, maxEntries }) {
     return request;
   }
 
-  return { get, getStale, set, getPending, setPending };
+  function remove(key) {
+    return cache.delete(key);
+  }
+
+  function entries() {
+    return [...cache].map(([key, entry]) => [key, entry.value, entry.cachedAt]);
+  }
+
+  function restore(saved) {
+    if (!Array.isArray(saved)) return 0;
+
+    for (const [key, value, cachedAt] of saved) {
+      if (typeof key !== "string" || !Number.isFinite(cachedAt)) continue;
+      if (Date.now() - cachedAt > ttlMs) continue;
+
+      cache.delete(key);
+      cache.set(key, { value, cachedAt });
+    }
+
+    while (cache.size > maxEntries) {
+      cache.delete(cache.keys().next().value);
+    }
+
+    return cache.size;
+  }
+
+  return { get, getStale, set, remove, getPending, setPending, entries, restore };
 }

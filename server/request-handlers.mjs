@@ -14,6 +14,7 @@ import {
   evaluateAccidentFree,
 } from "./car-response.mjs";
 import {
+  forgetCategory,
   getCachedCategory,
   getPendingCategory,
   setCachedCategory,
@@ -27,6 +28,7 @@ import {
   setPendingSearch,
 } from "./search-cache.mjs";
 import {
+  forgetDetail,
   getCachedDetail,
   getPendingDetail,
   getStaleDetail,
@@ -73,19 +75,28 @@ function runNextListEnrichment() {
     });
 }
 
-function isEnrichedCategory(cached) {
+function listCategory(category) {
+  return {
+    manufacturerEnglishName: category.manufacturerEnglishName,
+    modelGroupEnglishName: category.modelGroupEnglishName,
+    gradeEnglishName: category.gradeEnglishName,
+  };
+}
+
+function isEnrichedCategory(cached, car) {
   return (
     cached &&
     typeof cached === "object" &&
     "transmission" in cached &&
-    "koreaTotalKrw" in cached
+    "koreaTotalKrw" in cached &&
+    cached.price === car.Price
   );
 }
 
 async function loadCarListItem(car, deadline, enrichment) {
   const cached = getCachedCategory(car.Id);
 
-  if (isEnrichedCategory(cached)) {
+  if (isEnrichedCategory(cached, car)) {
     return createCarListItem(
       car,
       cached.category,
@@ -111,7 +122,7 @@ async function loadCarListItem(car, deadline, enrichment) {
         if (!response.ok) return createCarListItem(car);
 
         const detail = await response.json();
-        const category = detail.category || {};
+        const category = listCategory(detail.category || {});
         const transmission = detail.spec?.transmissionName || "";
         const [koreaTotalKrw, accidentSummary] = await Promise.all([
           requestCarAcquisitionCost(detail),
@@ -124,6 +135,7 @@ async function loadCarListItem(car, deadline, enrichment) {
           transmission,
           koreaTotalKrw,
           accidentFree,
+          price: car.Price,
         });
         return createCarListItem(
           car,
@@ -248,6 +260,13 @@ export async function handleCarDetailRequest(carId, response) {
     setCachedDetail(carId, body);
     sendJsonText(response, 200, body, browserCacheHeaders);
   } catch (error) {
+    if (error.statusCode === 404) {
+      forgetDetail(carId);
+      forgetCategory(carId);
+      sendJson(response, 404, { error: "This car is no longer listed" });
+      return;
+    }
+
     const stale = getStaleDetail(carId);
 
     if (stale) {

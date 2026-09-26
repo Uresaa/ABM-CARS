@@ -8,6 +8,7 @@ import {
 } from "./server/request-handlers.mjs";
 import { clientKey, isRateLimited } from "./server/rate-limit.mjs";
 import { startCacheWarmer } from "./server/cache-warmer.mjs";
+import { loadCarCache, saveCarCache } from "./server/car-cache.mjs";
 
 const port = Number(process.env.PORT) || 4173;
 
@@ -99,10 +100,19 @@ server.requestTimeout = 45000;
 server.headersTimeout = 20000;
 server.keepAliveTimeout = 65000;
 
-server.listen(port, () => {
+for (const signal of ["SIGTERM", "SIGINT"]) {
+  process.on(signal, async () => {
+    await saveCarCache();
+    process.exit(0);
+  });
+}
+
+server.listen(port, async () => {
   console.log(
     `ABM CARS is running at http://localhost:${port}/html/index.html`,
   );
+
+  await loadCarCache();
   startCacheWarmer().catch((error) => {
     console.error("Cache warmer failed to start", error);
   });
