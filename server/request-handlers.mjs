@@ -88,7 +88,7 @@ function isEnrichedCategory(cached, car) {
     cached &&
     typeof cached === "object" &&
     "transmission" in cached &&
-    "koreaTotalKrw" in cached &&
+    cached.koreaTotalKrw > 0 &&
     typeof car.Price === "number" &&
     cached.price === car.Price
   );

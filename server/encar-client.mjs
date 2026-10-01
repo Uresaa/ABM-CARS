@@ -3,7 +3,7 @@ import { createLimiter } from "./upstream-limit.mjs";
 const encarListUrl = "https://api.encar.com/search/car/list/general";
 const encarReadsideUrl = "https://api.encar.com/v1/readside";
 const encarDetailUrl = `${encarReadsideUrl}/vehicle`;
-const encarCalculatorUrl = "https://www.encar.com/dc/dc_carsearchpop.do";
+const encarAcquisitionUrl = "https://api.encar.com/legacy/usedcar/v4/acquisition";
 const encarImageUrl = "https://ci.encar.com";
 
 const requestHeaders = {
@@ -125,33 +125,19 @@ export async function requestCarAcquisitionCost(
   { timeoutMs = 10000, priority = false } = {},
 ) {
   const vehicleId = Number(car.vehicleId);
-  if (!vehicleId) return 0;
+  const carPrice = Number(car.advertisement?.price);
+  if (!vehicleId || !carPrice) return 0;
 
-  const url = new URL(encarCalculatorUrl);
-  url.search = new URLSearchParams({
-    method: "getCarCalcJson",
-    carid: String(vehicleId),
-    isLease: "",
-    isBuyback: "",
-    carType: "dc",
-    aqprice: String(car.advertisement?.price || ""),
-    regist: "0",
-    carTypeCode: "",
-    purpose: "",
-    isHomeService: "",
-    advertisementType: car.advertisement?.advertisementType || "",
-    encarServiceType: "",
-    centerCode: "",
-  }).toString();
+  const url = new URL(encarAcquisitionUrl);
+  url.searchParams.set("carId", String(vehicleId));
+  url.searchParams.set("carPrice", String(carPrice));
 
   try {
     const response = await requestEncar(url, { timeoutMs, priority });
     if (!response.ok) return 0;
 
-    const data = JSON.parse(
-      new TextDecoder("euc-kr").decode(await response.arrayBuffer()),
-    );
-    return Number(data?.[0]?.acquisition?.totalPrice) || 0;
+    const data = await response.json();
+    return Number(data?.totalPrice) || 0;
   } catch {
     return 0;
   }
