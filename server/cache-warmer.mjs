@@ -2,14 +2,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { homepageSnapshotPath } from "./paths.mjs";
 import { warmCarList } from "./request-handlers.mjs";
-import {
-  getCachedSearch,
-  getStaleSearch,
-  setCachedSearch,
-} from "./search-cache.mjs";
+import { getStaleSearch, setCachedSearch } from "./search-cache.mjs";
 
 const REFRESH_INTERVAL_MS = 25 * 60 * 1000;
 const STARTUP_DELAY_MS = 1000;
+const RESTORED_REFRESH_DELAY_MS = 2 * 60 * 1000;
 
 const ALL_CARS_QUERY = "(And.Hidden.N.)";
 const DOMESTIC_CARS_QUERY = "(And.Hidden.N._.CarType.Y.)";
@@ -67,22 +64,22 @@ function homepageSearchUrls() {
 
 async function restoreSnapshot() {
   try {
-    const { savedAt, entries } = JSON.parse(await readFile(snapshotPath, "utf8"));
-    const isFresh = Date.now() - Number(savedAt) < REFRESH_INTERVAL_MS;
+    const { entries } = JSON.parse(await readFile(snapshotPath, "utf8"));
+    let restored = 0;
 
     for (const [key, body] of Object.entries(entries || {})) {
       if (typeof body !== "string") continue;
 
-      setCachedSearch(key, body, isFresh ? undefined : 0);
+      setCachedSearch(key, body);
       lastGoodBodies.set(key, body);
+      restored += 1;
     }
 
-    console.log("Restored homepage cache", {
-      entries: Object.keys(entries || {}).length,
-      fresh: isFresh,
-    });
+    console.log("Restored homepage cache", { entries: restored });
+
+    return restored > 0;
   } catch {
-    return;
+    return false;
   }
 }
 
@@ -103,12 +100,8 @@ async function saveSnapshot() {
   }
 }
 
-async function warmHomepage({ skipFresh = false } = {}) {
+async function warmHomepage() {
   for (const url of homepageSearchUrls()) {
-    if (skipFresh && getCachedSearch(url.search, url.searchParams.has("inav"))) {
-      continue;
-    }
-
     try {
       const { degraded } = await warmCarList(url);
 
@@ -125,8 +118,11 @@ async function warmHomepage({ skipFresh = false } = {}) {
 }
 
 export async function startCacheWarmer() {
-  await restoreSnapshot();
+  const restored = await restoreSnapshot();
+  const firstRefreshMs = restored ? RESTORED_REFRESH_DELAY_MS : STARTUP_DELAY_MS;
 
-  setTimeout(() => warmHomepage({ skipFresh: true }), STARTUP_DELAY_MS).unref?.();
-  setInterval(() => warmHomepage(), REFRESH_INTERVAL_MS).unref?.();
+  setTimeout(() => {
+    warmHomepage();
+    setInterval(warmHomepage, REFRESH_INTERVAL_MS).unref?.();
+  }, firstRefreshMs).unref?.();
 }
