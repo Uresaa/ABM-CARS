@@ -13,6 +13,8 @@ const DOMESTIC_CARS_QUERY = "(And.Hidden.N._.CarType.Y.)";
 const IMPORTED_CARS_QUERY = "(And.Hidden.N._.CarType.N.)";
 const FILTER_NAVIGATION = "|Metadata|Sort";
 const MINIMUM_YEAR_CONDITION = "Year.range(201600..).";
+const MINIMUM_PRICE_CONDITION = "Price.range(300..).";
+const FOR_SALE_ONLY = "SellType.일반.";
 const TRENDING_MANUFACTURERS = ["BMW", "\uBCA4\uCE20", "\uC544\uC6B0\uB514"];
 const TRENDING_CARS_PER_MANUFACTURER = 4;
 const TRENDING_OFFSETS = [0, TRENDING_CARS_PER_MANUFACTURER];
@@ -22,7 +24,7 @@ const snapshotPath = homepageSnapshotPath;
 const lastGoodBodies = new Map();
 
 function trendingQuery(manufacturer) {
-  return `(And.Hidden.N._.(C.CarType.N._.Manufacturer.${manufacturer}.)_.${MINIMUM_YEAR_CONDITION})`;
+  return `(And.Hidden.N._.(C.CarType.N._.Manufacturer.${manufacturer}.)_.${MINIMUM_YEAR_CONDITION}_.${MINIMUM_PRICE_CONDITION}_.${FOR_SALE_ONLY})`;
 }
 
 function searchUrl({ query, offset = 0, limit, navigation }) {
@@ -30,7 +32,7 @@ function searchUrl({ query, offset = 0, limit, navigation }) {
 
   url.searchParams.set("count", "true");
   url.searchParams.set("q", query);
-  url.searchParams.set("sr", `|ModifiedDate|${offset}|${limit}`);
+  url.searchParams.set("sr", `|PriceAsc|${offset}|${limit}`);
 
   if (navigation) url.searchParams.set("inav", navigation);
 

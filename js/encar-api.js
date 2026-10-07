@@ -22,7 +22,7 @@
     const parameters = new URLSearchParams({
       count: "true",
       q: query,
-      sr: `|ModifiedDate|${offset}|${limit}`,
+      sr: `|PriceAsc|${offset}|${limit}`,
     });
 
     if (navigation) parameters.set("inav", navigation);

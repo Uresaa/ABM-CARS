@@ -1,6 +1,8 @@
 ﻿const EncarFilter = (() => {
   const ALL_CARS_QUERY = "(And.Hidden.N.)";
   const MINIMUM_YEAR = 2016;
+  const FOR_SALE_ONLY = "SellType.일반.";
+  const MINIMUM_PRICE_UNIT = 300;
   const EUR_PER_KRW = 0.0006134351235;
 
   function readFilterOptions(filterData, filterName) {
@@ -67,9 +69,10 @@
       createRangeCondition("Mileage", mileageFrom, mileageTo),
       createRangeCondition(
         "Price",
-        euroToEncarPriceUnit(priceFromEur),
+        Math.max(Number(euroToEncarPriceUnit(priceFromEur)) || 0, MINIMUM_PRICE_UNIT),
         euroToEncarPriceUnit(priceToEur),
       ),
+      FOR_SALE_ONLY,
     ].filter(Boolean);
     const baseQuery = categoryQuery || ALL_CARS_QUERY;
 
