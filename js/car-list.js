@@ -166,10 +166,6 @@
       const firstYear = Number(first.year) || Number.POSITIVE_INFINITY;
       const secondYear = Number(second.year) || Number.POSITIVE_INFINITY;
 
-      if (this.#yearFrom && firstYear !== secondYear) {
-        return firstYear - secondYear;
-      }
-
       const firstPrice = Number.isFinite(Number(first.sellingPriceEur))
         ? Number(first.sellingPriceEur)
         : Number.POSITIVE_INFINITY;
@@ -282,6 +278,9 @@
       this.#yearFrom = yearFrom;
       this.#laterYearQuery = laterYearQuery;
       this.#showingRequestedYear = Boolean(exactYearQuery);
+      this.#showingTrending = false;
+      this.#clearResults();
+      this.#count.textContent = "";
       this.#status.textContent = "Duke kërkuar veturat...";
       this.#loadMoreButton.hidden = true;
 
@@ -304,14 +303,10 @@
           this.#activeQuery = this.#laterYearQuery;
           this.#laterYearQuery = null;
           this.#showingRequestedYear = false;
-          this.#showingTrending = false;
-          this.#clearResults();
           this.#totalCars = laterResult.total;
           this.#nextOffset = laterResult.offset + laterResult.limit;
           this.render(laterResult.cars);
         } else {
-          this.#showingTrending = false;
-          this.#clearResults();
           this.#totalCars = result.total;
           this.#nextOffset = result.offset + result.limit;
           this.render(result.cars);
@@ -322,6 +317,7 @@
 
         console.error(error);
         this.#restoreResults(previous);
+        this.render([]);
         this.#updateState();
         this.#status.textContent = previous.cars.length
           ? "Kërkimi nuk u krye tani. Po shfaqen veturat e mëparshme — provo sërish pas pak."
