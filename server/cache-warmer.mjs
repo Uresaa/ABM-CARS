@@ -2,7 +2,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { homepageSnapshotPath } from "./paths.mjs";
 import { warmCarList } from "./request-handlers.mjs";
-import { getStaleSearch, setCachedSearch } from "./search-cache.mjs";
+import {
+  getCachedSearch,
+  getStaleSearch,
+  setCachedSearch,
+} from "./search-cache.mjs";
 
 const REFRESH_INTERVAL_MS = 25 * 60 * 1000;
 const STARTUP_DELAY_MS = 1000;
@@ -119,9 +123,18 @@ async function warmHomepage() {
   await saveSnapshot();
 }
 
+function homepageIsCached() {
+  return homepageSearchUrls().every((url) =>
+    getCachedSearch(url.search, url.searchParams.has("inav")),
+  );
+}
+
 export async function startCacheWarmer() {
-  const restored = await restoreSnapshot();
-  const firstRefreshMs = restored ? RESTORED_REFRESH_DELAY_MS : STARTUP_DELAY_MS;
+  await restoreSnapshot();
+
+  const firstRefreshMs = homepageIsCached()
+    ? RESTORED_REFRESH_DELAY_MS
+    : STARTUP_DELAY_MS;
 
   setTimeout(() => {
     warmHomepage();
