@@ -5,6 +5,8 @@
   const IMAGE_URL = "/api/car-image?path=";
   const DETAIL_URL = "/car-details/";
   const NAVIGATION = "|Metadata|Sort";
+  const CHEAPEST_FIRST = "PriceAsc";
+  const NEWEST_FIRST = "ModifiedDate";
 
   const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
   const MAX_ATTEMPTS = 3;
@@ -18,11 +20,12 @@
     limit = 12,
     query = ALL_CARS_QUERY,
     navigation,
+    sort = CHEAPEST_FIRST,
   } = {}) {
     const parameters = new URLSearchParams({
       count: "true",
       q: query,
-      sr: `|PriceAsc|${offset}|${limit}`,
+      sr: `|${sort}|${offset}|${limit}`,
     });
 
     if (navigation) parameters.set("inav", navigation);
@@ -162,6 +165,7 @@
         searchCars({
           offset: carsOffset,
           limit: carsPerManufacturer,
+          sort: NEWEST_FIRST,
           query: buildQuery({
             categoryQuery: manufacturerQuery(manufacturer),
           }),
@@ -212,7 +216,9 @@
 
   function loadTotalCarsCount() {
     return rememberRequest(singleRequests, "totalCars", () =>
-      requestSearchData({ limit: 0 }).then((data) => Number(data.Count) || 0),
+      requestSearchData({ limit: 0, sort: NEWEST_FIRST }).then(
+        (data) => Number(data.Count) || 0,
+      ),
     );
   }
 
@@ -221,6 +227,7 @@
       query,
       limit: 0,
       navigation: NAVIGATION,
+      sort: NEWEST_FIRST,
     });
 
     return readFilterOptions(data.iNav, filterName);

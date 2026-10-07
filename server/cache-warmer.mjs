@@ -36,7 +36,7 @@ function searchUrl({ query, offset = 0, limit, navigation }) {
 
   url.searchParams.set("count", "true");
   url.searchParams.set("q", query);
-  url.searchParams.set("sr", `|PriceAsc|${offset}|${limit}`);
+  url.searchParams.set("sr", `|ModifiedDate|${offset}|${limit}`);
 
   if (navigation) url.searchParams.set("inav", navigation);
 
